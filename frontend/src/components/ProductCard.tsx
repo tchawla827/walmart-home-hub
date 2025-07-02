@@ -3,7 +3,7 @@ import { Product } from '../mockProducts';
 
 interface Props {
   product: Product;
-  onAddToCart: (id: number) => void;
+  onAddToCart: (product: Product) => void;
 }
 
 const ProductCard: React.FC<Props> = ({ product, onAddToCart }) => {
@@ -21,7 +21,7 @@ const ProductCard: React.FC<Props> = ({ product, onAddToCart }) => {
           <p className="text-yellow-600 text-sm mb-2">Rating: {product.rating}</p>
         )}
         <button
-          onClick={() => onAddToCart(product.id)}
+          onClick={() => onAddToCart(product)}
           className="mt-auto bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
         >
           Add to Cart

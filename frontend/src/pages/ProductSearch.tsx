@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
-import { mockProducts } from '../mockProducts';
+import { mockProducts, Product } from '../mockProducts';
+import { useCart } from '../context/CartContext';
 
 const ProductSearch: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -33,8 +34,10 @@ const ProductSearch: React.FC = () => {
 
   const categories = Array.from(new Set(mockProducts.map((p) => p.category)));
 
-  const addToCart = (id: number) => {
-    console.log(`Add to cart: ${id}`);
+  const { addItem } = useCart();
+
+  const addToCart = (product: Product) => {
+    addItem(product);
   };
 
   return (
