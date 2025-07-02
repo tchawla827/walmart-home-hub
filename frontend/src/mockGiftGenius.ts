@@ -1,4 +1,4 @@
-import { mockProducts } from './mockProducts';
+import { mockProducts, Product } from './mockProducts';
 
 export interface GiftBundle {
   title: string;
@@ -6,7 +6,12 @@ export interface GiftBundle {
   totalPrice: number;
 }
 
-export const mockGiftGenius = async (prompt: string): Promise<GiftBundle[]> => {
+export interface GiftSuggestions {
+  bundles: GiftBundle[];
+  items: Product[];
+}
+
+export const mockGiftGenius = async (prompt: string): Promise<GiftSuggestions> => {
   console.log('mockGiftGenius called with prompt:', prompt);
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -31,7 +36,19 @@ export const mockGiftGenius = async (prompt: string): Promise<GiftBundle[]> => {
           totalPrice: parseFloat(total.toFixed(2)),
         });
       }
-      resolve(bundles);
+
+      // Generate solo item recommendations
+      const numSolo = 2 + Math.floor(Math.random() * 3); // 2-4 items
+      const soloItems: Product[] = [];
+      const chosenSoloIndexes = new Set<number>();
+      while (soloItems.length < numSolo) {
+        const index = Math.floor(Math.random() * mockProducts.length);
+        if (chosenSoloIndexes.has(index)) continue;
+        chosenSoloIndexes.add(index);
+        soloItems.push(mockProducts[index]);
+      }
+
+      resolve({ bundles, items: soloItems });
     }, 1000);
   });
 };
