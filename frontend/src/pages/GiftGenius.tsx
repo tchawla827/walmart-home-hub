@@ -47,9 +47,20 @@ const GiftGenius: React.FC = () => {
                 to={`/product/${item.id}`}
                 className="block bg-green-50 p-3 rounded hover:bg-green-100"
               >
-                <h3 className="font-semibold">{item.title}</h3>
-                <p className="text-sm">{item.description}</p>
-                <p className="font-medium mt-1">Price: ${item.price.toFixed(2)}</p>
+                <div className="flex items-start space-x-3">
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="w-16 h-16 object-cover rounded"
+                  />
+                  <div>
+                    <h3 className="font-semibold">{item.title}</h3>
+                    <p className="text-sm">{item.description}</p>
+                    <p className="font-medium mt-1">
+                      Price: ${item.price.toFixed(2)}
+                    </p>
+                  </div>
+                </div>
               </Link>
             ))}
 
@@ -61,9 +72,16 @@ const GiftGenius: React.FC = () => {
                 className="block bg-blue-50 p-3 rounded hover:bg-blue-100"
               >
                 <h3 className="font-semibold">{bundle.title}</h3>
-                <ul className="list-disc pl-5 text-sm">
+                <ul className="list-disc pl-5 text-sm space-y-1">
                   {bundle.items.map((item) => (
-                    <li key={item.id}>{item.title}</li>
+                    <li key={item.id} className="flex items-center space-x-2">
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="w-8 h-8 object-cover rounded"
+                      />
+                      <span>{item.title}</span>
+                    </li>
                   ))}
                 </ul>
                 <p className="font-medium mt-1">
