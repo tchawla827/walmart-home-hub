@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { GiftBundle, mockGiftGenius } from '../mockGiftGenius';
+import { GiftBundle, GiftSuggestions, mockGiftGenius } from '../mockGiftGenius';
+import { Product } from '../mockProducts';
 
 interface ChatEntry {
   prompt: string;
   bundles: GiftBundle[];
+  items: Product[];
 }
 
 const GiftGenius: React.FC = () => {
@@ -16,9 +18,9 @@ const GiftGenius: React.FC = () => {
     console.log('User prompt:', prompt);
     setLoading(true);
     try {
-      const bundles = await mockGiftGenius(prompt);
-      console.log('LLM response:', bundles);
-      setHistory((prev) => [...prev, { prompt, bundles }]);
+      const result: GiftSuggestions = await mockGiftGenius(prompt);
+      console.log('LLM response:', result);
+      setHistory((prev) => [...prev, { prompt, bundles: result.bundles, items: result.items }]);
       setPrompt('');
     } finally {
       setLoading(false);
@@ -37,6 +39,15 @@ const GiftGenius: React.FC = () => {
             <div className="bg-gray-100 p-2 rounded self-start">
               {entry.prompt}
             </div>
+
+            {entry.items.map((item, iIdx) => (
+              <div key={iIdx} className="bg-green-50 p-3 rounded">
+                <h3 className="font-semibold">{item.title}</h3>
+                <p className="text-sm">{item.description}</p>
+                <p className="font-medium mt-1">Price: ${item.price.toFixed(2)}</p>
+              </div>
+            ))}
+
             {entry.bundles.map((bundle, bIdx) => (
               <div key={bIdx} className="bg-blue-50 p-3 rounded">
                 <h3 className="font-semibold">{bundle.title}</h3>
