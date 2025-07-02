@@ -31,14 +31,20 @@ const Navbar: React.FC = () => {
               >
                 GiftGenius
               </Link>
-              <Link 
-                to="/cart" 
+              <Link
+                to="/cart"
                 className="px-3 py-2 rounded-md text-sm font-medium hover:bg-primary-500 hover:text-accent-300 transition-all"
               >
                 Cart
               </Link>
-              <Link 
-                to="/profile" 
+              <Link
+                to="/login"
+                className="px-3 py-2 rounded-md text-sm font-medium hover:bg-primary-500 hover:text-accent-300 transition-all"
+              >
+                Login
+              </Link>
+              <Link
+                to="/profile"
                 className="px-3 py-2 rounded-md text-sm font-medium hover:bg-primary-500 hover:text-accent-300 transition-all"
               >
                 Profile
@@ -85,15 +91,22 @@ const Navbar: React.FC = () => {
           >
             GiftGenius
           </Link>
-          <Link 
-            to="/cart" 
+          <Link
+            to="/cart"
             className="block px-3 py-2 rounded-md text-base font-medium hover:bg-primary-500 hover:text-accent-300 transition-all"
             onClick={() => setIsOpen(false)}
           >
             Cart
           </Link>
-          <Link 
-            to="/profile" 
+          <Link
+            to="/login"
+            className="block px-3 py-2 rounded-md text-base font-medium hover:bg-primary-500 hover:text-accent-300 transition-all"
+            onClick={() => setIsOpen(false)}
+          >
+            Login
+          </Link>
+          <Link
+            to="/profile"
             className="block px-3 py-2 rounded-md text-base font-medium hover:bg-primary-500 hover:text-accent-300 transition-all"
             onClick={() => setIsOpen(false)}
           >

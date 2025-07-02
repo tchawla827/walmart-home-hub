@@ -9,6 +9,8 @@ import ProductDetail from './pages/ProductDetail';
 import CartPage from './pages/CartPage';
 import PantrySetup from './pages/PantrySetup';
 import GiftBundlePage from './pages/GiftBundlePage';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
 import { CartProvider } from './context/CartContext';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Import toast styling
@@ -42,6 +44,8 @@ const App: React.FC = () => {
           <Route path="/bundle" element={<GiftBundlePage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </Router>
     </CartProvider>
