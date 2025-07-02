@@ -1,30 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import './App.css';
-import axios from 'axios';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import Home from './pages/Home';
+import Placeholder from './pages/Placeholder';
 
-function App() {
-  const [backendMessage, setBackendMessage] = useState('');
-
-  useEffect(() => {
-    axios
-      .get(`${process.env.REACT_APP_BACKEND_URL}/`)
-      .then((res) => {
-        setBackendMessage(res.data.message);
-      })
-      .catch((err) => {
-        console.error('Backend error:', err);
-        setBackendMessage('❌ Failed to connect to Flask backend');
-      });
-  }, []);
-
+const App: React.FC = () => {
   return (
-    <div className="min-h-screen bg-blue-100 flex flex-col items-center justify-center text-center p-6">
-      <h1 className="text-4xl font-bold text-blue-800 mb-4">
-        🚀 SmartPantry + GiftGenius
-      </h1>
-      <p className="text-lg text-gray-700">{backendMessage || 'Loading...'}</p>
-    </div>
+    <Router>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/search" element={<Placeholder title="Search" />} />
+        <Route path="/products" element={<Placeholder title="Products" />} />
+        <Route path="/pantry/setup" element={<Placeholder title="SmartPantry Setup" />} />
+        <Route path="/gift" element={<Placeholder title="GiftGenius" />} />
+        <Route path="/cart" element={<Placeholder title="Cart" />} />
+        <Route path="/profile" element={<Placeholder title="Profile" />} />
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;
