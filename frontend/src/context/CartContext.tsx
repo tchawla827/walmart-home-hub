@@ -44,18 +44,20 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const addToCart = (product: Product) => {
+    let toastMessage = '';
     setCartItems((prev) => {
       const existing = prev.find((p) => p.id === product.id);
       if (existing) {
         const updatedQty = existing.quantity + 1;
-        showToast(`Added another ${product.title} to cart (${updatedQty} total)`);
+        toastMessage = `Added another ${product.title} to cart (${updatedQty} total)`;
         return prev.map((item) =>
           item.id === product.id ? { ...item, quantity: updatedQty } : item
         );
       }
-      showToast(`Added ${product.title} to cart`);
+      toastMessage = `Added ${product.title} to cart`;
       return [...prev, { ...product, quantity: 1 }];
     });
+    showToast(toastMessage);
   };
 
   const removeFromCart = (productId: number) => {
