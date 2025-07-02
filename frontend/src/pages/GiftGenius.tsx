@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { GiftBundle, GiftSuggestions, mockGiftGenius } from '../mockGiftGenius';
 import { Product } from '../mockProducts';
 
@@ -41,19 +42,28 @@ const GiftGenius: React.FC = () => {
             </div>
 
             {entry.items.map((item, iIdx) => (
-              <div key={iIdx} className="bg-green-50 p-3 rounded">
+              <Link
+                key={iIdx}
+                to={`/product/${item.id}`}
+                className="block bg-green-50 p-3 rounded hover:bg-green-100"
+              >
                 <h3 className="font-semibold">{item.title}</h3>
                 <p className="text-sm">{item.description}</p>
                 <p className="font-medium mt-1">Price: ${item.price.toFixed(2)}</p>
-              </div>
+              </Link>
             ))}
 
             {entry.bundles.map((bundle, bIdx) => (
-              <div key={bIdx} className="bg-blue-50 p-3 rounded">
+              <Link
+                to="/bundle"
+                state={{ bundle }}
+                key={bIdx}
+                className="block bg-blue-50 p-3 rounded hover:bg-blue-100"
+              >
                 <h3 className="font-semibold">{bundle.title}</h3>
                 <ul className="list-disc pl-5 text-sm">
                   {bundle.items.map((item) => (
-                    <li key={item}>{item}</li>
+                    <li key={item.id}>{item.title}</li>
                   ))}
                 </ul>
                 <p className="font-medium mt-1">
@@ -65,7 +75,7 @@ const GiftGenius: React.FC = () => {
                 >
                   Add All to Cart
                 </button>
-              </div>
+              </Link>
             ))}
           </div>
         ))}

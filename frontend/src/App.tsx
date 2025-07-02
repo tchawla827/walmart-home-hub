@@ -8,6 +8,7 @@ import ProductSearch from './pages/ProductSearch';
 import ProductDetail from './pages/ProductDetail';
 import CartPage from './pages/CartPage';
 import PantrySetup from './pages/PantrySetup';
+import GiftBundlePage from './pages/GiftBundlePage';
 import { CartProvider } from './context/CartContext';
 
 const App: React.FC = () => {
@@ -22,6 +23,7 @@ const App: React.FC = () => {
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/pantry/setup" element={<PantrySetup />} />
           <Route path="/gift" element={<GiftGenius />} />
+          <Route path="/bundle" element={<GiftBundlePage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/profile" element={<Profile />} />
         </Routes>

@@ -2,7 +2,7 @@ import { mockProducts, Product } from './mockProducts';
 
 export interface GiftBundle {
   title: string;
-  items: string[];
+  items: Product[];
   totalPrice: number;
 }
 
@@ -19,7 +19,7 @@ export const mockGiftGenius = async (prompt: string): Promise<GiftSuggestions> =
       const bundles: GiftBundle[] = [];
       for (let i = 0; i < numBundles; i++) {
         const numItems = 3 + Math.floor(Math.random() * 3); // 3-5 items
-        const items: string[] = [];
+        const items: Product[] = [];
         const chosenIndexes = new Set<number>();
         let total = 0;
         while (items.length < numItems) {
@@ -27,7 +27,7 @@ export const mockGiftGenius = async (prompt: string): Promise<GiftSuggestions> =
           if (chosenIndexes.has(index)) continue;
           chosenIndexes.add(index);
           const prod = mockProducts[index];
-          items.push(prod.title);
+          items.push(prod);
           total += prod.price;
         }
         bundles.push({
