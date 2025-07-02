@@ -15,12 +15,15 @@ const GiftBundlePage: React.FC = () => {
       <h1 className="text-2xl font-bold">{bundle.title}</h1>
       <ul className="space-y-2">
         {bundle.items.map((item) => (
-          <li key={item.id} className="border p-3 rounded">
-            <Link to={`/product/${item.id}`} className="font-semibold hover:underline">
-              {item.title}
+          <li key={item.id}>
+            <Link
+              to={`/product/${item.id}`}
+              className="block border p-3 rounded hover:bg-gray-50"
+            >
+              <h3 className="font-semibold">{item.title}</h3>
+              <p className="text-sm">{item.description}</p>
+              <p className="font-medium">Price: ${item.price.toFixed(2)}</p>
             </Link>
-            <p className="text-sm">{item.description}</p>
-            <p className="font-medium">Price: ${item.price.toFixed(2)}</p>
           </li>
         ))}
       </ul>
