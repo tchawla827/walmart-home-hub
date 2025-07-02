@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Placeholder from './pages/Placeholder';
+import ProductSearch from './pages/ProductSearch';
 
 const App: React.FC = () => {
   return (
@@ -10,8 +11,8 @@ const App: React.FC = () => {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/search" element={<Placeholder title="Search" />} />
-        <Route path="/products" element={<Placeholder title="Products" />} />
+        <Route path="/search" element={<ProductSearch />} />
+        <Route path="/products" element={<ProductSearch />} />
         <Route path="/pantry/setup" element={<Placeholder title="SmartPantry Setup" />} />
         <Route path="/gift" element={<Placeholder title="GiftGenius" />} />
         <Route path="/cart" element={<Placeholder title="Cart" />} />
