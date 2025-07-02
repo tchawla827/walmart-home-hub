@@ -6,6 +6,7 @@ import Placeholder from './pages/Placeholder';
 import ProductSearch from './pages/ProductSearch';
 import ProductDetail from './pages/ProductDetail';
 import CartPage from './pages/CartPage';
+import PantrySetup from './pages/PantrySetup';
 import { CartProvider } from './context/CartContext';
 
 const App: React.FC = () => {
@@ -18,7 +19,7 @@ const App: React.FC = () => {
           <Route path="/search" element={<ProductSearch />} />
           <Route path="/products" element={<ProductSearch />} />
           <Route path="/product/:id" element={<ProductDetail />} />
-          <Route path="/pantry/setup" element={<Placeholder title="SmartPantry Setup" />} />
+          <Route path="/pantry/setup" element={<PantrySetup />} />
           <Route path="/gift" element={<Placeholder title="GiftGenius" />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/profile" element={<Placeholder title="Profile" />} />
