@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
-import Placeholder from './pages/Placeholder';
+import Profile from './pages/Profile';
 import GiftGenius from './pages/GiftGenius';
 import ProductSearch from './pages/ProductSearch';
 import ProductDetail from './pages/ProductDetail';
@@ -23,7 +23,7 @@ const App: React.FC = () => {
           <Route path="/pantry/setup" element={<PantrySetup />} />
           <Route path="/gift" element={<GiftGenius />} />
           <Route path="/cart" element={<CartPage />} />
-          <Route path="/profile" element={<Placeholder title="Profile" />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </Router>
     </CartProvider>
