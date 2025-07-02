@@ -10,12 +10,28 @@ import CartPage from './pages/CartPage';
 import PantrySetup from './pages/PantrySetup';
 import GiftBundlePage from './pages/GiftBundlePage';
 import { CartProvider } from './context/CartContext';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // Import toast styling
 
 const App: React.FC = () => {
   return (
     <CartProvider>
       <Router>
+        {/* Toast notifications container */}
+        <ToastContainer
+          position="top-right"
+          autoClose={2000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
+        
         <Navbar />
+        
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/search" element={<ProductSearch />} />

@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState } from 'react';
 import { Product } from '../mockProducts';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export type ProductWithQty = Product & { quantity: number };
 
@@ -9,6 +11,8 @@ interface CartContextProps {
   removeFromCart: (productId: number) => void;
   updateQuantity: (productId: number, qty: number) => void;
   getSubtotal: () => number;
+  getTotalItems: () => number;
+  clearCart: () => void;
 }
 
 const CartContext = createContext<CartContextProps | undefined>(undefined);
@@ -26,17 +30,30 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [cartItems, setCartItems] = useState<ProductWithQty[]>([]);
 
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    toast[type](message, {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+  };
+
   const addToCart = (product: Product) => {
     setCartItems((prev) => {
       const existing = prev.find((p) => p.id === product.id);
       if (existing) {
         const updatedQty = existing.quantity + 1;
-        console.log(`Updated ${product.title} quantity to ${updatedQty}`);
+        showToast(`Added another ${product.title} to cart (${updatedQty} total)`);
         return prev.map((item) =>
           item.id === product.id ? { ...item, quantity: updatedQty } : item
         );
       }
-      console.log(`Added ${product.title} to cart`);
+      showToast(`Added ${product.title} to cart`);
       return [...prev, { ...product, quantity: 1 }];
     });
   };
@@ -45,34 +62,52 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     setCartItems((prev) => {
       const product = prev.find((p) => p.id === productId);
       if (product) {
-        console.log(`Removed ${product.title} from cart`);
+        showToast(`Removed ${product.title} from cart`, 'error');
       }
       return prev.filter((item) => item.id !== productId);
     });
   };
 
   const updateQuantity = (productId: number, qty: number) => {
+    if (qty < 1) {
+      removeFromCart(productId);
+      return;
+    }
+
     setCartItems((prev) => {
-      const updated = prev
-        .map((item) =>
-          item.id === productId ? { ...item, quantity: qty } : item
-        )
-        .filter((item) => item.quantity > 0);
-      console.log(`Updated product ${productId} quantity to ${qty}`);
-      return updated;
+      return prev.map((item) =>
+        item.id === productId ? { ...item, quantity: qty } : item
+      );
     });
   };
 
   const getSubtotal = () => {
-    return cartItems.reduce(
+    return parseFloat(cartItems.reduce(
       (sum, item) => sum + item.price * item.quantity,
       0
-    );
+    ).toFixed(2));
+  };
+
+  const getTotalItems = () => {
+    return cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  };
+
+  const clearCart = () => {
+    setCartItems([]);
+    showToast('Cart cleared', 'error');
   };
 
   return (
     <CartContext.Provider
-      value={{ cartItems, addToCart, removeFromCart, updateQuantity, getSubtotal }}
+      value={{ 
+        cartItems, 
+        addToCart, 
+        removeFromCart, 
+        updateQuantity, 
+        getSubtotal,
+        getTotalItems,
+        clearCart
+      }}
     >
       {children}
     </CartContext.Provider>
