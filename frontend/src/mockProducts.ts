@@ -5,6 +5,7 @@ export interface Product {
   rating: number;
   category: string;
   image: string;
+  description: string;
 }
 
 export const mockProducts: Product[] = [
@@ -14,7 +15,8 @@ export const mockProducts: Product[] = [
     price: 3.99,
     rating: 4.5,
     category: 'grocery',
-    image: 'https://via.placeholder.com/300?text=Apples'
+    image: 'https://via.placeholder.com/300?text=Apples',
+    description: 'Crisp organic apples picked fresh from local farms.'
   },
   {
     id: 2,
@@ -22,7 +24,8 @@ export const mockProducts: Product[] = [
     price: 59.99,
     rating: 4.2,
     category: 'electronics',
-    image: 'https://via.placeholder.com/300?text=Headphones'
+    image: 'https://via.placeholder.com/300?text=Headphones',
+    description: 'Bluetooth headphones with noise cancellation and long battery life.'
   },
   {
     id: 3,
@@ -30,7 +33,8 @@ export const mockProducts: Product[] = [
     price: 399.99,
     rating: 4.6,
     category: 'electronics',
-    image: 'https://via.placeholder.com/300?text=TV'
+    image: 'https://via.placeholder.com/300?text=TV',
+    description: '40-inch smart TV with vibrant display and built-in streaming apps.'
   },
   {
     id: 4,
@@ -38,7 +42,8 @@ export const mockProducts: Product[] = [
     price: 79.99,
     rating: 4.3,
     category: 'home',
-    image: 'https://via.placeholder.com/300?text=Comforter'
+    image: 'https://via.placeholder.com/300?text=Comforter',
+    description: 'Plush queen-size comforter set to keep you cozy all night.'
   },
   {
     id: 5,
@@ -46,7 +51,8 @@ export const mockProducts: Product[] = [
     price: 14.99,
     rating: 4.1,
     category: 'toys',
-    image: 'https://via.placeholder.com/300?text=Action+Figure'
+    image: 'https://via.placeholder.com/300?text=Action+Figure',
+    description: 'Collectible action figure with movable joints and accessories.'
   },
   {
     id: 6,
@@ -54,7 +60,8 @@ export const mockProducts: Product[] = [
     price: 49.99,
     rating: 4.4,
     category: 'fashion',
-    image: 'https://via.placeholder.com/300?text=Sneakers'
+    image: 'https://via.placeholder.com/300?text=Sneakers',
+    description: 'Comfortable sneakers perfect for running errands or workouts.'
   },
   {
     id: 7,
@@ -62,7 +69,8 @@ export const mockProducts: Product[] = [
     price: 19.99,
     rating: 4.7,
     category: 'sports',
-    image: 'https://via.placeholder.com/300?text=Yoga+Mat'
+    image: 'https://via.placeholder.com/300?text=Yoga+Mat',
+    description: 'Non-slip yoga mat providing excellent grip for daily practice.'
   },
   {
     id: 8,
@@ -70,7 +78,8 @@ export const mockProducts: Product[] = [
     price: 29.99,
     rating: 4.0,
     category: 'home',
-    image: 'https://via.placeholder.com/300?text=Blender'
+    image: 'https://via.placeholder.com/300?text=Blender',
+    description: 'High-speed blender ideal for smoothies and sauces.'
   },
   {
     id: 9,
@@ -78,7 +87,8 @@ export const mockProducts: Product[] = [
     price: 9.99,
     rating: 4.3,
     category: 'fashion',
-    image: 'https://via.placeholder.com/300?text=Kids+Tshirt'
+    image: 'https://via.placeholder.com/300?text=Kids+Tshirt',
+    description: 'Soft cotton T-shirt available in fun colors and prints.'
   },
   {
     id: 10,
@@ -86,6 +96,7 @@ export const mockProducts: Product[] = [
     price: 2.99,
     rating: 4.8,
     category: 'grocery',
-    image: 'https://via.placeholder.com/300?text=Cookies'
+    image: 'https://via.placeholder.com/300?text=Cookies',
+    description: 'Rich chocolate chip cookies baked to perfection.'
   }
 ];
