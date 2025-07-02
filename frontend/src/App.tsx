@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Placeholder from './pages/Placeholder';
 import ProductSearch from './pages/ProductSearch';
+import CartPage from './pages/CartPage';
 
 const App: React.FC = () => {
   return (
@@ -15,7 +16,7 @@ const App: React.FC = () => {
         <Route path="/products" element={<ProductSearch />} />
         <Route path="/pantry/setup" element={<Placeholder title="SmartPantry Setup" />} />
         <Route path="/gift" element={<Placeholder title="GiftGenius" />} />
-        <Route path="/cart" element={<Placeholder title="Cart" />} />
+        <Route path="/cart" element={<CartPage />} />
         <Route path="/profile" element={<Placeholder title="Profile" />} />
       </Routes>
     </Router>
