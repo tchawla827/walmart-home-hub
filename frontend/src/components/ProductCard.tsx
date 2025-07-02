@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Product } from '../mockProducts';
 
 interface Props {
@@ -7,8 +8,16 @@ interface Props {
 }
 
 const ProductCard: React.FC<Props> = ({ product, onAddToCart }) => {
+  const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    onAddToCart(product);
+  };
+
   return (
-    <div className="border rounded-lg overflow-hidden flex flex-col">
+    <Link
+      to={`/product/${product.id}`}
+      className="border rounded-lg overflow-hidden flex flex-col"
+    >
       <img
         src={product.image}
         alt={product.title}
@@ -21,13 +30,13 @@ const ProductCard: React.FC<Props> = ({ product, onAddToCart }) => {
           <p className="text-yellow-600 text-sm mb-2">Rating: {product.rating}</p>
         )}
         <button
-          onClick={() => onAddToCart(product)}
+          onClick={handleAddToCart}
           className="mt-auto bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
         >
           Add to Cart
         </button>
       </div>
-    </div>
+    </Link>
   );
 };
 
