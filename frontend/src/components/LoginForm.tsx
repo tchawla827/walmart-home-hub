@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
@@ -14,7 +14,7 @@ const LoginForm: React.FC = () => {
     if (loading) return;
     setLoading(true);
     try {
-      const res = await axios.post('/api/login', { email, password });
+      const res = await api.post('/api/login', { email, password });
       localStorage.setItem('auth_token', res.data.token);
       toast.success('Logged in');
       navigate('/dashboard');

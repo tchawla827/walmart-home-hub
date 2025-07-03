@@ -76,5 +76,33 @@ def get_products():
     ]
     return jsonify(products)
 
+
+@app.route("/api/products/<uuid:product_id>", methods=["GET"])
+def get_product(product_id):
+    """Return a single product by id."""
+    row = (
+        Product.query.with_entities(
+            Product.id,
+            Product.name,
+            Product.price,
+            Product.image_url,
+            Product.description,
+            Product.category,
+        )
+        .filter_by(id=product_id)
+        .first()
+    )
+    if not row:
+        return jsonify({"error": "Product not found"}), 404
+    product = {
+        "id": str(row.id),
+        "name": row.name,
+        "price": row.price,
+        "image_url": row.image_url,
+        "description": row.description,
+        "category": row.category,
+    }
+    return jsonify(product)
+
 if __name__ == "__main__":
     app.run(debug=True)
