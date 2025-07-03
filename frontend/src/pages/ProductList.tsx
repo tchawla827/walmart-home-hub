@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+
+import api from '../api';
+
 import { Product } from '../types';
 
 const SkeletonCard: React.FC = () => (
@@ -46,7 +48,7 @@ const ProductList: React.FC = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get<Product[]>('/api/products');
+        const res = await api.get<Product[]>('/api/products');
         console.log('Fetched products', res.data);
         setProducts(res.data);
       } catch (e) {

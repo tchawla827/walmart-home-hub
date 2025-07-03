@@ -3,7 +3,9 @@ import { useSearchParams } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import { Product } from '../types';
 import { useCart } from '../context/CartContext';
-import axios from 'axios';
+
+import api from '../api';
+
 import { toast } from 'react-toastify';
 
 const ProductSearch: React.FC = () => {
@@ -16,7 +18,9 @@ const ProductSearch: React.FC = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get<Product[]>("/api/products");
+
+        const res = await api.get<Product[]>("/api/products");
+
         setProducts(res.data);
       } catch (err) {
         console.error("Failed to fetch products", err);
