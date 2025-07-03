@@ -16,36 +16,118 @@ const Home: React.FC = () => {
   }, []);
 
   return (
-    <div>
+    <div className="bg-gray-50 dark:bg-gray-900">
       {/* Hero Section */}
-      <div className="bg-cover bg-center h-64 sm:h-80" style={{ backgroundImage: `url('https://via.placeholder.com/1200x400?text=Seasonal+Deal')` }}>
-        <div className="bg-black bg-opacity-50 h-full flex flex-col items-center justify-center text-white">
-          <h1 className="text-3xl sm:text-5xl font-bold mb-4 text-center">Big Savings This Season</h1>
-          <Link to="/search" className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-6 py-2 rounded">Shop Now</Link>
-        </div>
-      </div>
+      <div 
+  className="relative bg-cover bg-center h-80 sm:h-96 md:h-[32rem]"
+  style={{ 
+    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://via.placeholder.com/1200x600?text=Seasonal+Deals')`,
+    backgroundBlendMode: 'multiply'
+  }}
+>
+  <div className="container mx-auto h-full flex flex-col items-center justify-center text-center px-4">
+    <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg">
+      Big Savings This Season
+    </h1>
+    <p className="text-xl text-white mb-8 max-w-2xl drop-shadow-lg">
+      Discover incredible deals on everything you need
+    </p>
+    <Link 
+      to="/search" 
+      className="bg-accent-400 hover:bg-accent-500 text-gray-900 font-bold px-8 py-3 rounded-lg text-lg transition-all hover:scale-105 shadow-lg"
+    >
+      Shop Now
+    </Link>
+  </div>
+</div>
 
       {/* Category Grid */}
-      <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-        {categories.map((cat) => (
-          <Link key={cat.slug} to={`/search?category=${cat.slug}`} className="text-center border rounded-lg overflow-hidden hover:shadow-lg">
-            <img src={cat.image} alt={cat.name} className="w-full h-24 object-cover" />
-            <div className="p-2 font-medium">{cat.name}</div>
-          </Link>
-        ))}
+      <div className="container mx-auto px-4 py-12">
+        <h2 className="text-2xl md:text-3xl font-bold text-primary-600 dark:text-primary-400 mb-8 text-center">
+          Shop by Category
+        </h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
+          {categories.map((cat) => (
+            <Link 
+              key={cat.slug} 
+              to={`/search?category=${cat.slug}`} 
+              className="group text-center bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1"
+            >
+              <div className="aspect-square overflow-hidden">
+                <img 
+                  src={cat.image} 
+                  alt={cat.name} 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                />
+              </div>
+              <div className="p-3 md:p-4">
+                <h3 className="font-bold text-gray-900 dark:text-white group-hover:text-primary-500 transition-colors">
+                  {cat.name}
+                </h3>
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
 
       {/* Feature Modules */}
-      <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="border rounded-lg p-6 flex flex-col">
-          <h2 className="text-xl font-bold mb-2">Stay Stocked with SmartPantry</h2>
-          <p className="mb-4">Track pantry items and auto-reorder when running low.</p>
-          <Link to="/pantry/setup" className="mt-auto inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Set up Pantry</Link>
+      <div className="container mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden flex flex-col border border-gray-100 dark:border-gray-700">
+            <div className="bg-primary-100 dark:bg-gray-700 p-6">
+              <h2 className="text-xl md:text-2xl font-bold text-primary-600 dark:text-primary-400 mb-2">
+                Stay Stocked with SmartPantry
+              </h2>
+              <p className="text-gray-600 dark:text-gray-300">
+                Track pantry items and auto-reorder when running low.
+              </p>
+            </div>
+            <div className="p-6 mt-auto">
+              <Link 
+                to="/pantry/setup" 
+                className="inline-block bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-lg font-medium transition-all hover:scale-[1.02]"
+              >
+                Set up Pantry
+              </Link>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden flex flex-col border border-gray-100 dark:border-gray-700">
+            <div className="bg-accent-50 dark:bg-gray-700 p-6">
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                Find the Perfect Gift with AI
+              </h2>
+              <p className="text-gray-600 dark:text-gray-300">
+                Just tell us the occasion. We'll do the rest.
+              </p>
+            </div>
+            <div className="p-6 mt-auto">
+              <Link 
+                to="/gift" 
+                className="inline-block bg-accent-400 hover:bg-accent-500 text-gray-900 px-6 py-3 rounded-lg font-medium transition-all hover:scale-[1.02]"
+              >
+                Try GiftGenius
+              </Link>
+            </div>
+          </div>
         </div>
-        <div className="border rounded-lg p-6 flex flex-col">
-          <h2 className="text-xl font-bold mb-2">Find the Perfect Gift with AI</h2>
-          <p className="mb-4">Just tell us the occasion. We'll do the rest.</p>
-          <Link to="/gift" className="mt-auto inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Try GiftGenius</Link>
+      </div>
+
+      {/* Deal of the Day */}
+      <div className="bg-primary-600 text-white py-12">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold mb-4">
+            Deal of the Day
+          </h2>
+          <p className="text-xl mb-6 max-w-2xl mx-auto">
+            Don't miss out on today's exclusive offers
+          </p>
+          <Link 
+            to="/deal-of-the-day" 
+            className="inline-block bg-white hover:bg-gray-100 text-primary-600 px-8 py-3 rounded-lg font-bold transition-all hover:scale-105 shadow-lg"
+          >
+            View Today's Deals
+          </Link>
         </div>
       </div>
     </div>
