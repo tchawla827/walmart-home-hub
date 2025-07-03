@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import Profile from './pages/Profile';
 import GiftGenius from './pages/GiftGenius';
 import ProductSearch from './pages/ProductSearch';
+import ProductList from './pages/ProductList';
 import ProductDetail from './pages/ProductDetail';
 import CartPage from './pages/CartPage';
 import PantrySetup from './pages/PantrySetup';
@@ -37,7 +38,7 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/search" element={<ProductSearch />} />
-          <Route path="/products" element={<ProductSearch />} />
+          <Route path="/products" element={<ProductList />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/pantry/setup" element={<PantrySetup />} />
           <Route path="/gift" element={<GiftGenius />} />
