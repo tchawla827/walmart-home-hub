@@ -61,7 +61,7 @@ const ProductDetail: React.FC = () => {
   const handleAddToCart = () => {
     if (!product) return;
     addToCart(product);
-    toast.success(`${product.name} added to cart!`);
+    toast.success(`${product.title} added to cart!`);
   };
 
   return (
@@ -80,8 +80,8 @@ const ProductDetail: React.FC = () => {
         <div className="flex flex-col md:flex-row">
           <div className="md:w-1/2 bg-white p-6 flex items-center justify-center">
             <img
-              src={product.image_url}
-              alt={product.name}
+              src={product.thumbnail}
+              alt={product.title}
               className="w-full h-auto max-h-96 object-contain"
             />
           </div>
@@ -93,7 +93,7 @@ const ProductDetail: React.FC = () => {
             </div>
             
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-4">
-              {product.name}
+              {product.title}
             </h1>
             
 

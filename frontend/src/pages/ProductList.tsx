@@ -18,8 +18,8 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => (
   <div className="group border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all bg-white dark:bg-gray-800">
     <div className="relative">
       <img
-        src={product.image_url}
-        alt={product.name}
+        src={product.thumbnail}
+        alt={product.title}
         className="w-full h-48 object-contain bg-white p-4"
       />
       {product.description && (
@@ -30,8 +30,9 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => (
     </div>
     <div className="p-4">
       <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-2">
-        {product.name}
+        {product.title}
       </h3>
+      <p className="text-sm text-gray-500">{product.category}</p>
       <p className="text-primary-600 dark:text-primary-400 font-bold mt-2">
         ${product.price.toFixed(2)}
       </p>
@@ -64,7 +65,7 @@ const ProductList: React.FC = () => {
 
   const filtered = products.filter((p) => {
     const matchCat = category ? p.category === category : true;
-    const matchSearch = p.name.toLowerCase().includes(search.toLowerCase());
+    const matchSearch = p.title.toLowerCase().includes(search.toLowerCase());
     return matchCat && matchSearch;
   });
 

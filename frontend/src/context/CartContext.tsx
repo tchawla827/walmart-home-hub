@@ -8,8 +8,8 @@ export type ProductWithQty = Product & { quantity: number };
 interface CartContextProps {
   cartItems: ProductWithQty[];
   addToCart: (product: Product) => void;
-  removeFromCart: (productId: string) => void;
-  updateQuantity: (productId: string, qty: number) => void;
+  removeFromCart: (productId: number) => void;
+  updateQuantity: (productId: number, qty: number) => void;
   getSubtotal: () => number;
   getTotalItems: () => number;
   clearCart: () => void;
@@ -49,28 +49,28 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
       const existing = prev.find((p) => p.id === product.id);
       if (existing) {
         const updatedQty = existing.quantity + 1;
-        toastMessage = `Added another ${product.name} to cart (${updatedQty} total)`;
+        toastMessage = `Added another ${product.title} to cart (${updatedQty} total)`;
         return prev.map((item) =>
           item.id === product.id ? { ...item, quantity: updatedQty } : item
         );
       }
-      toastMessage = `Added ${product.name} to cart`;
+      toastMessage = `Added ${product.title} to cart`;
       return [...prev, { ...product, quantity: 1 }];
     });
     showToast(toastMessage);
   };
 
-  const removeFromCart = (productId: string) => {
+  const removeFromCart = (productId: number) => {
     setCartItems((prev) => {
       const product = prev.find((p) => p.id === productId);
         if (product) {
-          showToast(`Removed ${product.name} from cart`, 'error');
+          showToast(`Removed ${product.title} from cart`, 'error');
         }
       return prev.filter((item) => item.id !== productId);
     });
   };
 
-  const updateQuantity = (productId: string, qty: number) => {
+  const updateQuantity = (productId: number, qty: number) => {
     if (qty < 1) {
       removeFromCart(productId);
       return;

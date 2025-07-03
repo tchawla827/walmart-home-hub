@@ -51,7 +51,7 @@ const ProductSearch: React.FC = () => {
   };
 
   const filtered = products.filter((p) => {
-    const matchesQuery = query ? p.name.toLowerCase().includes(query) : true;
+    const matchesQuery = query ? p.title.toLowerCase().includes(query) : true;
     const matchesCategory = category ? p.category.toLowerCase() === category : true;
     return matchesQuery && matchesCategory;
   });
@@ -62,7 +62,7 @@ const ProductSearch: React.FC = () => {
 
   const handleAddToCart = (product: Product) => {
     addToCart(product);
-    toast.success(`${product.name} added to cart!`);
+    toast.success(`${product.title} added to cart!`);
   };
 
   return (

@@ -62,16 +62,17 @@ def normalize_product(p: Dict) -> Dict:
         "name": p.get("title", ""),
         "description": p.get("description", ""),
         "price": float(p.get("price", 0)),
-        "image_url": p.get("image", ""),
+        "image_url": p.get("thumbnail", ""),
         "category": CATEGORY_MAP.get(p.get("category", ""), "home"),
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
 
 
 def fetch_products() -> List[Dict]:
-    resp = requests.get("https://fakestoreapi.com/products")
+    resp = requests.get("https://dummyjson.com/products", params={"limit": 100, "skip": 0})
     resp.raise_for_status()
-    return resp.json()
+    data = resp.json()
+    return data.get("products", [])
 
 
 def main():
@@ -104,3 +105,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
