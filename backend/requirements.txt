@@ -6,3 +6,5 @@ PyJWT
 python-dotenv
 psycopg2-binary
 requests
+supabase
+faker
