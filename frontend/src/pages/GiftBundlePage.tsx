@@ -51,7 +51,6 @@ const GiftBundlePage: React.FC = () => {
           <h1 className="text-2xl md:text-3xl font-bold text-primary-600 dark:text-primary-400 mb-2">
             {bundle.title}
           </h1>
-          <p className="text-gray-600 dark:text-gray-300">{bundle.description}</p>
         </div>
 
         <div className="p-6">
