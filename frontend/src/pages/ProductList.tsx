@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
+
 import api from '../api';
+
 import { Product } from '../types';
 
 const SkeletonCard: React.FC = () => (

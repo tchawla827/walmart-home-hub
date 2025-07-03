@@ -3,6 +3,9 @@ import { useParams, Link } from 'react-router-dom';
 import { Product } from '../types';
 import { useCart } from '../context/CartContext';
 import api from '../api';
+
+
+
 import { toast } from 'react-toastify';
 
 const ProductDetail: React.FC = () => {
@@ -15,7 +18,9 @@ const ProductDetail: React.FC = () => {
     const fetchProduct = async () => {
       if (!id) return;
       try {
+
         const res = await api.get<Product>(`/api/products/${id}`);
+
         setProduct(res.data);
       } catch (err) {
         console.error('Failed to fetch product', err);
