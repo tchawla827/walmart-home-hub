@@ -1,7 +1,8 @@
 import os
 import uuid
 from datetime import datetime, timezone
-from typing import Dict, List
+from typing import Dict, List, Iterable
+import secrets
 
 import requests
 from supabase import create_client, Client
@@ -17,6 +18,14 @@ if not SUPABASE_URL or not SUPABASE_KEY:
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
+TARGET_CATEGORIES = [
+    "groceries",
+    "electronics",
+    "home",
+    "toys",
+    "fashion",
+]
+
 CATEGORY_MAP: Dict[str, str] = {
     "electronics": "electronics",
     "jewelery": "fashion",
@@ -25,9 +34,26 @@ CATEGORY_MAP: Dict[str, str] = {
 }
 
 
-def chunked(seq: List[Dict], size: int):
+def chunked(seq: Iterable[Dict], size: int) -> Iterable[List[Dict]]:
+    seq = list(seq)
     for i in range(0, len(seq), size):
         yield seq[i : i + size]
+
+
+def ensure_quantity(base: List[Dict], category: str, quantity: int) -> List[Dict]:
+    items: List[Dict] = []
+    idx = 0
+    while len(items) < quantity:
+        tmpl = base[idx % len(base)]
+        item = tmpl.copy()
+        item["id"] = str(uuid.uuid4())
+        rand = secrets.token_hex(4)
+        item["name"] = f"{tmpl['name']} {category}-{rand}"
+        item["category"] = category
+        item["created_at"] = datetime.now(timezone.utc).isoformat()
+        items.append(item)
+        idx += 1
+    return items
 
 
 def normalize_product(p: Dict) -> Dict:
@@ -42,24 +68,28 @@ def normalize_product(p: Dict) -> Dict:
     }
 
 
-def fetch_products(limit: int = 50) -> List[Dict]:
+def fetch_products() -> List[Dict]:
     resp = requests.get("https://fakestoreapi.com/products")
     resp.raise_for_status()
-    return resp.json()[:limit]
+    return resp.json()
 
 
 def main():
     try:
-        raw = fetch_products(50)
+        raw = fetch_products()
         print(f"Fetched {len(raw)} items")
     except Exception as e:
         print(f"Error fetching products: {e}")
         return
 
-    products = [normalize_product(p) for p in raw]
+    base_products = [normalize_product(p) for p in raw[:50]]
+    category_buckets: List[Dict] = []
+    for category in TARGET_CATEGORIES:
+        items = ensure_quantity(base_products, category, 25)
+        category_buckets.extend(items)
 
     inserted = 0
-    for chunk in chunked(products, 25):
+    for chunk in chunked(category_buckets, 25):
         try:
             resp = supabase.table("products").insert(chunk).execute()
             data = resp.data or []
