@@ -6,6 +6,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from flask_bcrypt import Bcrypt
 import jwt
+import requests
 
 try:
     from .models import db, User , Product # type: ignore
@@ -52,57 +53,30 @@ def login():
 
 @app.route("/api/products", methods=["GET"])
 def get_products():
-    """Return all products."""
-    rows = (
-        Product.query.with_entities(
-            Product.id,
-            Product.name,
-            Product.price,
-            Product.image_url,
-            Product.description,
-            Product.category,
-        ).all()
-    )
-    products = [
-        {
-            "id": str(row.id),
-            "name": row.name,
-            "price": row.price,
-            "image_url": row.image_url,
-            "description": row.description,
-            "category": row.category,
-        }
-        for row in rows
-    ]
-    return jsonify(products)
-
-
-@app.route("/api/products/<uuid:product_id>", methods=["GET"])
-def get_product(product_id):
-    """Return a single product by id."""
-    row = (
-        Product.query.with_entities(
-            Product.id,
-            Product.name,
-            Product.price,
-            Product.image_url,
-            Product.description,
-            Product.category,
+    """Fetch the first 100 products from DummyJSON."""
+    try:
+        resp = requests.get(
+            "https://dummyjson.com/products", params={"limit": 100, "skip": 0}
         )
-        .filter_by(id=product_id)
-        .first()
-    )
-    if not row:
-        return jsonify({"error": "Product not found"}), 404
-    product = {
-        "id": str(row.id),
-        "name": row.name,
-        "price": row.price,
-        "image_url": row.image_url,
-        "description": row.description,
-        "category": row.category,
-    }
-    return jsonify(product)
+        resp.raise_for_status()
+        data = resp.json()
+    except requests.RequestException:
+        return jsonify({"error": "Failed to fetch products"}), 500
+
+    return jsonify(data.get("products", []))
+
+
+@app.route("/api/products/<int:product_id>", methods=["GET"])
+def get_product(product_id: int):
+    """Fetch a single product by id from DummyJSON."""
+    try:
+        resp = requests.get(f"https://dummyjson.com/products/{product_id}")
+        resp.raise_for_status()
+        data = resp.json()
+    except requests.RequestException:
+        return jsonify({"error": "Failed to fetch product"}), 500
+
+    return jsonify(data)
 
 if __name__ == "__main__":
     app.run(debug=True)
