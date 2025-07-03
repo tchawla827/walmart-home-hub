@@ -1,14 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-
-export interface Product {
-  id: number;
-  name: string;
-  price: number;
-  image_url: string;
-  description: string;
-  category: string;
-}
+import { Product } from '../types';
 
 const SkeletonCard: React.FC = () => (
   <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-sm animate-pulse">
