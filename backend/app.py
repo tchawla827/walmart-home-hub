@@ -20,7 +20,7 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret')
 app.config['JWT_EXPIRY_SECONDS'] = int(os.getenv('JWT_EXPIRY_SECONDS', '3600'))
 
 CORS(app)
-db.init_app(app)
+# db.init_app(app) #uncomment this
 bcrypt = Bcrypt(app)
 
 @app.route("/")
