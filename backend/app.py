@@ -8,9 +8,9 @@ from flask_bcrypt import Bcrypt
 import jwt
 
 try:
-    from .models import db, User  # type: ignore
+    from .models import db, User , Product # type: ignore
 except ImportError:
-    from models import db, User  # type: ignore
+    from models import db, User , Product  # type: ignore
 
 load_dotenv()  # Load variables from .env
 
@@ -20,6 +20,7 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret')
 app.config['JWT_EXPIRY_SECONDS'] = int(os.getenv('JWT_EXPIRY_SECONDS', '3600'))
 
 CORS(app)
+db.init_app(app)
 # db.init_app(app) #uncomment this
 bcrypt = Bcrypt(app)
 
@@ -48,6 +49,32 @@ def login():
         token = jwt.encode(payload, app.config["SECRET_KEY"], algorithm="HS256")
         return jsonify({"token": token})
     return jsonify({"error": "Invalid credentials"}), 401
+
+@app.route("/api/products", methods=["GET"])
+def get_products():
+    """Return all products."""
+    rows = (
+        Product.query.with_entities(
+            Product.id,
+            Product.name,
+            Product.price,
+            Product.image_url,
+            Product.description,
+            Product.category,
+        ).all()
+    )
+    products = [
+        {
+            "id": str(row.id),
+            "name": row.name,
+            "price": row.price,
+            "image_url": row.image_url,
+            "description": row.description,
+            "category": row.category,
+        }
+        for row in rows
+    ]
+    return jsonify(products)
 
 if __name__ == "__main__":
     app.run(debug=True)

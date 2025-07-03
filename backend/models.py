@@ -130,3 +130,16 @@ class Notification(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     user = db.relationship('User', back_populates='notifications')
+
+class Product(db.Model):
+    """Product available for purchase."""
+
+    __tablename__ = 'products'
+
+    id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name = db.Column(db.String(255), nullable=False)
+    price = db.Column(db.Float, nullable=False, default=0)
+    image_url = db.Column(db.String(512))
+    description = db.Column(db.Text)
+    category = db.Column(db.String(120))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
