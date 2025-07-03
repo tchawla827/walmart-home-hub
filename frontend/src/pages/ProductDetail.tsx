@@ -1,22 +1,36 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { mockProducts, Product } from '../mockProducts';
+import { Product } from '../types';
 import { useCart } from '../context/CartContext';
+import axios from 'axios';
 import { toast } from 'react-toastify';
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { addToCart } = useCart();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (id) {
-      console.log(`Viewing product ID: ${id}`);
-    }
+    const fetchProduct = async () => {
+      if (!id) return;
+      try {
+        const res = await axios.get<Product>(`/api/products/${id}`);
+        setProduct(res.data);
+      } catch (err) {
+        console.error('Failed to fetch product', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProduct();
   }, [id]);
 
-  const product: Product | undefined = mockProducts.find(
-    (p) => p.id === parseInt(id || '', 10)
-  );
+  if (loading) {
+    return (
+      <div className="p-8 text-center">Loading...</div>
+    );
+  }
 
   if (!product) {
     return (
@@ -40,8 +54,9 @@ const ProductDetail: React.FC = () => {
   }
 
   const handleAddToCart = () => {
+    if (!product) return;
     addToCart(product);
-    toast.success(`${product.title} added to cart!`);
+    toast.success(`${product.name} added to cart!`);
   };
 
   return (
@@ -60,8 +75,8 @@ const ProductDetail: React.FC = () => {
         <div className="flex flex-col md:flex-row">
           <div className="md:w-1/2 bg-white p-6 flex items-center justify-center">
             <img
-              src={product.image}
-              alt={product.title}
+              src={product.image_url}
+              alt={product.name}
               className="w-full h-auto max-h-96 object-contain"
             />
           </div>
@@ -73,26 +88,10 @@ const ProductDetail: React.FC = () => {
             </div>
             
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-4">
-              {product.title}
+              {product.name}
             </h1>
             
-            <div className="flex items-center mb-4">
-              <div className="flex text-accent-400 mr-2">
-                {[...Array(5)].map((_, i) => (
-                  <svg
-                    key={i}
-                    className={`w-5 h-5 ${i < Math.floor(product.rating) ? 'fill-current' : 'stroke-current'}`}
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                ))}
-              </div>
-              <span className="text-gray-600 dark:text-gray-300 text-sm">
-                {product.rating} rating
-              </span>
-            </div>
+
 
             <p className="text-3xl font-bold text-primary-600 dark:text-primary-400 mb-6">
               ${product.price.toFixed(2)}

@@ -20,7 +20,7 @@ const CartPage: React.FC = () => {
     clearCart();
   };
 
-  const handleQuantityChange = (id: number, value: string) => {
+  const handleQuantityChange = (id: string, value: string) => {
     const qty = parseInt(value);
     if (qty >= 1) {
       updateQuantity(id, qty);
@@ -67,12 +67,12 @@ const CartPage: React.FC = () => {
             className="flex flex-col md:flex-row items-center border border-gray-200 dark:border-gray-700 p-4 rounded-lg bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all"
           >
             <img
-              src={item.image}
-              alt={item.title}
+              src={item.image_url}
+              alt={item.name}
               className="w-24 h-24 object-contain mb-4 md:mb-0 md:mr-6"
             />
             <div className="flex-1 w-full md:w-auto text-center md:text-left mb-4 md:mb-0">
-              <h2 className="font-semibold text-gray-900 dark:text-white">{item.title}</h2>
+              <h2 className="font-semibold text-gray-900 dark:text-white">{item.name}</h2>
               <p className="text-primary-600 dark:text-primary-400 font-bold">
                 ${item.price.toFixed(2)}
               </p>

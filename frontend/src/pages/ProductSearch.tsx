@@ -1,14 +1,31 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
-import { mockProducts, Product } from '../mockProducts';
+import { Product } from '../types';
 import { useCart } from '../context/CartContext';
+import axios from 'axios';
 import { toast } from 'react-toastify';
 
 const ProductSearch: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get('q')?.toLowerCase() || '';
   const category = searchParams.get('category')?.toLowerCase() || '';
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get<Product[]>("/api/products");
+        setProducts(res.data);
+      } catch (err) {
+        console.error("Failed to fetch products", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   useEffect(() => {
     if (query) {
@@ -29,19 +46,19 @@ const ProductSearch: React.FC = () => {
     setSearchParams(params);
   };
 
-  const products = mockProducts.filter((p) => {
-    const matchesQuery = query ? p.title.toLowerCase().includes(query) : true;
+  const filtered = products.filter((p) => {
+    const matchesQuery = query ? p.name.toLowerCase().includes(query) : true;
     const matchesCategory = category ? p.category.toLowerCase() === category : true;
     return matchesQuery && matchesCategory;
   });
 
-  const categories = Array.from(new Set(mockProducts.map((p) => p.category)));
+  const categories = Array.from(new Set(products.map((p) => p.category)));
 
   const { addToCart } = useCart();
 
   const handleAddToCart = (product: Product) => {
     addToCart(product);
-    toast.success(`${product.title} added to cart!`);
+    toast.success(`${product.name} added to cart!`);
   };
 
   return (
@@ -71,7 +88,9 @@ const ProductSearch: React.FC = () => {
         </div>
       </div>
 
-      {products.length === 0 ? (
+      {loading ? (
+        <div className="text-center">Loading...</div>
+      ) : filtered.length === 0 ? (
         <div className="bg-gray-100 dark:bg-gray-700 p-8 rounded-lg text-center">
           <div className="text-5xl mb-4">🔍</div>
           <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
@@ -83,7 +102,7 @@ const ProductSearch: React.FC = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
+          {filtered.map((product) => (
             <ProductCard 
               key={product.id} 
               product={product} 
