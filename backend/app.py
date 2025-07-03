@@ -1,6 +1,5 @@
 import os
 from datetime import datetime, timedelta
-
 from flask import Flask, jsonify, request, g
 from functools import wraps
 import re
@@ -14,7 +13,7 @@ try:
 except ImportError:
     from models import db, User  # type: ignore
 
-load_dotenv()  # Load variables from .env
+load_dotenv()
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
@@ -24,7 +23,6 @@ app.config['JWT_EXPIRY_SECONDS'] = int(os.getenv('JWT_EXPIRY_SECONDS', '3600'))
 CORS(app)
 db.init_app(app)
 bcrypt = Bcrypt(app)
-
 
 def generate_token(user_id: str) -> str:
     payload = {
@@ -52,6 +50,7 @@ def token_required(f):
         return f(*args, **kwargs)
 
     return decorated
+
 
 @app.route("/")
 def hello():
@@ -102,6 +101,6 @@ def me():
     user = g.current_user
     return jsonify({"id": str(user.id), "email": user.email})
 
+
 if __name__ == "__main__":
     app.run(debug=True)
-

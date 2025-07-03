@@ -9,3 +9,9 @@ frontend/build/
 
 # Env
 .env
+
+# macOS
+.DS_Store
+# Python cache
+backend/__pycache__/
+

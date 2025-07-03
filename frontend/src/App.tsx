@@ -15,42 +15,42 @@ import Register from './pages/Register';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'; // Import toast styling
+import 'react-toastify/dist/ReactToastify.css';
 
 const App: React.FC = () => {
   return (
     <CartProvider>
       <AuthProvider>
         <Router>
-        {/* Toast notifications container */}
-        <ToastContainer
-          position="top-right"
-          autoClose={2000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-        />
-        
-        <Navbar />
-        
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/search" element={<ProductSearch />} />
-          <Route path="/products" element={<ProductSearch />} />
-          <Route path="/product/:id" element={<ProductDetail />} />
-          <Route path="/pantry/setup" element={<PantrySetup />} />
-          <Route path="/gift" element={<GiftGenius />} />
-          <Route path="/bundle" element={<GiftBundlePage />} />
-          <Route path="/cart" element={<CartPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-        </Routes>
+          {/* Toast notifications container */}
+          <ToastContainer
+            position="top-right"
+            autoClose={2000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          />
+
+          <Navbar />
+
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/search" element={<ProductSearch />} />
+            <Route path="/products" element={<ProductSearch />} />
+            <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="/pantry/setup" element={<PantrySetup />} />
+            <Route path="/gift" element={<GiftGenius />} />
+            <Route path="/bundle" element={<GiftBundlePage />} />
+            <Route path="/cart" element={<CartPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Routes>
         </Router>
       </AuthProvider>
     </CartProvider>
