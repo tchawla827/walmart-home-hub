@@ -2,6 +2,9 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import requests
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 # Determine database URL from environment
