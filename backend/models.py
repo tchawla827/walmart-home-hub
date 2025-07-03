@@ -10,17 +10,6 @@ import uuid
 
 db = SQLAlchemy()
 
-class Product(db.Model):
-    """Simple product catalog used for gift bundles and shopping."""
-    __tablename__ = 'products'
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Text, nullable=False)
-    price = db.Column(db.Float, nullable=False)
-    image_url = db.Column(db.Text)
-    category = db.Column(db.Text)
-    description = db.Column(db.Text)
-
 class User(db.Model):
     __tablename__ = 'users'
 
