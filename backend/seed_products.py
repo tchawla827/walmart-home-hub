@@ -6,6 +6,9 @@ from typing import List, Dict
 
 from supabase import create_client, Client
 from faker import Faker
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Toggle to clear existing rows before inserting
 clear_existing = True
