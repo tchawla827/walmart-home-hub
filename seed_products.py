@@ -6,6 +6,9 @@ from typing import List, Dict
 
 from supabase import create_client, Client
 from faker import Faker
+from dotenv import load_dotenv
+
+load_dotenv()  # Load environment variables from a .env file if present
 
 # Toggle to clear existing rows before inserting
 clear_existing = True
@@ -15,7 +18,10 @@ SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 if not SUPABASE_URL or not SUPABASE_KEY:
-    raise EnvironmentError("SUPABASE_URL and SUPABASE_KEY must be set")
+    raise EnvironmentError(
+        "SUPABASE_URL and SUPABASE_KEY must be set as environment variables or"
+        " defined in a .env file"
+    )
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
