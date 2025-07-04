@@ -154,7 +154,7 @@ const ProductDetail: React.FC = () => {
                   value={quantity}
                   onChange={(e) => setQuantity(parseInt(e.target.value))}
                 >
-                  {[...Array(10).keys()].map(num => (
+                  {Array.from({ length: 10 }, (_, num) => num).map((num) => (
                     <option key={num + 1} value={num + 1}>{num + 1}</option>
                   ))}
                 </select>
