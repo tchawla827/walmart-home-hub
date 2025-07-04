@@ -1,17 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Product } from '../types';
+import AddToCartButton from './AddToCartButton';
 
 interface Props {
   product: Product;
-  onAddToCart: (product: Product) => void;
 }
 
-const ProductCard: React.FC<Props> = ({ product, onAddToCart }) => {
-  const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    onAddToCart(product);
-  };
+const ProductCard: React.FC<Props> = ({ product }) => {
 
   return (
     <Link
@@ -31,12 +27,7 @@ const ProductCard: React.FC<Props> = ({ product, onAddToCart }) => {
         <p className="text-primary-600 dark:text-primary-400 font-bold text-lg mb-2">
           ${product.price.toFixed(2)}
         </p>
-        <button
-          onClick={handleAddToCart}
-          className="mt-auto bg-accent-400 hover:bg-accent-500 text-gray-900 px-4 py-2 rounded-md font-medium transition-all hover:scale-[1.02] active:scale-95"
-        >
-          Add to Cart
-        </button>
+        <AddToCartButton product={product} />
       </div>
     </Link>
   );
