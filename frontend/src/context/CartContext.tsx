@@ -7,7 +7,7 @@ export type ProductWithQty = Product & { quantity: number };
 
 interface CartContextProps {
   cartItems: ProductWithQty[];
-  addToCart: (product: Product) => void;
+  addToCart: (product: ProductWithQty) => void;
   removeFromCart: (productId: number) => void;
   updateQuantity: (productId: number, qty: number) => void;
   getSubtotal: () => number;
@@ -43,19 +43,19 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   };
 
-  const addToCart = (product: Product) => {
+  const addToCart = (product: ProductWithQty) => {
     let toastMessage = '';
     setCartItems((prev) => {
       const existing = prev.find((p) => p.id === product.id);
       if (existing) {
-        const updatedQty = existing.quantity + 1;
-        toastMessage = `Added another ${product.title} to cart (${updatedQty} total)`;
+        const updatedQty = existing.quantity + product.quantity;
+        toastMessage = `Added ${product.quantity} more ${product.title} to cart (${updatedQty} total)`;
         return prev.map((item) =>
           item.id === product.id ? { ...item, quantity: updatedQty } : item
         );
       }
-      toastMessage = `Added ${product.title} to cart`;
-      return [...prev, { ...product, quantity: 1 }];
+      toastMessage = `Added ${product.quantity} ${product.title} to cart`;
+      return [...prev, { ...product }];
     });
     showToast(toastMessage);
   };
