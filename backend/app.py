@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from flask_bcrypt import Bcrypt
 import jwt
 import requests
+from sqlalchemy import inspect, text
 
 try:
     from .models import db, User , Product # type: ignore
@@ -24,6 +25,24 @@ CORS(app)
 db.init_app(app)
 # db.init_app(app) #uncomment this
 bcrypt = Bcrypt(app)
+
+
+def ensure_user_schema() -> None:
+    """Add missing columns in the users table if they are absent."""
+    with app.app_context():
+        inspector = inspect(db.engine)
+        if inspector.has_table("users"):
+            columns = [c["name"] for c in inspector.get_columns("users")]
+            if "password_hash" not in columns:
+                with db.engine.begin() as conn:
+                    conn.execute(
+                        text(
+                            "ALTER TABLE users ADD COLUMN password_hash VARCHAR(255)"
+                        )
+                    )
+
+
+ensure_user_schema()
 
 @app.route("/")
 def hello():
