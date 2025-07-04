@@ -3,20 +3,20 @@ import { useParams, Link } from 'react-router-dom';
 import { Product } from '../types';
 import AddToCartButton from '../components/AddToCartButton';
 import api from '../api';
+import RatingStars from '../components/RatingStars';
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState<string>('');
+  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     const fetchProduct = async () => {
       if (!id) return;
       try {
-
         const res = await api.get<Product>(`/api/products/${id}`);
-
         setProduct(res.data);
         setSelectedImage(res.data.thumbnail || '');
       } catch (err) {
@@ -55,128 +55,235 @@ const ProductDetail: React.FC = () => {
     );
   }
 
-
   return (
-    <div className="max-w-7xl mx-auto p-4 md:p-6">
-      <Link 
-        to="/products" 
-        className="flex items-center text-primary-500 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300 mb-6 transition-colors"
-      >
-        <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-        </svg>
-        Back to Products
-      </Link>
+    <div className="max-w-7xl mx-auto px-4 py-6">
+      {/* Breadcrumb Navigation */}
+      <div className="text-sm breadcrumbs mb-6">
+        <ul>
+          <li><Link to="/">Home</Link></li> 
+          <li><Link to="/products">Products</Link></li>
+          <li><span className="text-gray-500">{product.category}</span></li>
+          <li className="font-medium">{product.title}</li>
+        </ul>
+      </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
-        <div className="flex flex-col md:flex-row">
-          <div className="md:w-1/2 bg-white p-6 flex flex-col items-center justify-center">
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* Product Images Section */}
+        <div className="lg:w-5/12">
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-4">
             <img
               src={selectedImage || product.thumbnail}
               alt={product.title}
-              className="w-full h-auto max-h-96 object-contain"
+              className="w-full h-auto max-h-96 object-contain mx-auto"
             />
-            {product.images && product.images.length > 0 && (
-              <div className="flex space-x-2 mt-4 overflow-x-auto">
-                {product.images.map((img) => (
+          </div>
+          
+          {product.images && product.images.length > 0 && (
+            <div className="flex gap-2 overflow-x-auto pb-2">
+              {product.images.map((img) => (
+                <button
+                  key={img}
+                  onClick={() => setSelectedImage(img)}
+                  className={`flex-shrink-0 w-16 h-16 border rounded-md overflow-hidden ${selectedImage === img ? 'border-primary-500 ring-2 ring-primary-300' : 'border-gray-200 dark:border-gray-600'}`}
+                >
                   <img
-                    key={img}
                     src={img}
-                    onClick={() => setSelectedImage(img)}
-                    className={`h-20 cursor-pointer border rounded-lg ${selectedImage === img ? 'border-primary-500' : 'border-transparent'}`}
+                    className="w-full h-full object-cover"
                     alt="thumbnail"
                   />
-                ))}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Product Info Section */}
+        <div className="lg:w-4/12">
+          <div className="mb-2">
+            <span className="text-sm text-gray-500 dark:text-gray-400">{product.brand}</span>
+          </div>
+          
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            {product.title}
+          </h1>
+
+          <div className="flex items-center gap-2 mb-4">
+            {product.rating !== undefined && (
+              <>
+                <RatingStars rating={product.rating} />
+                <span className="text-sm text-gray-600 dark:text-gray-300">
+                  {product.rating.toFixed(1)} ({product.reviews?.length || 0} reviews)
+                </span>
+              </>
+            )}
+          </div>
+
+          <div className="mb-6">
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-bold text-primary-600 dark:text-primary-400">
+                ${product.price.toFixed(2)}
+              </span>
+              {product.discountPercentage && (
+                <span className="text-sm line-through text-gray-500 dark:text-gray-400">
+                  ${(product.price / (1 - product.discountPercentage / 100)).toFixed(2)}
+                </span>
+              )}
+            </div>
+            {product.discountPercentage && (
+              <span className="text-sm text-green-600 dark:text-green-400">
+                Save {product.discountPercentage}%
+              </span>
+            )}
+          </div>
+
+          <div className="mb-6">
+            <h3 className="font-medium mb-2">Highlights</h3>
+            <ul className="list-disc pl-5 space-y-1 text-sm">
+              {product.description.split('. ').filter(Boolean).map((point, i) => (
+                <li key={i}>{point.replace(/\.$/, '')}</li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg mb-6">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="flex items-center gap-2">
+                <span className="font-medium">Quantity:</span>
+                <select 
+                  className="select select-bordered select-sm w-20"
+                  value={quantity}
+                  onChange={(e) => setQuantity(parseInt(e.target.value))}
+                >
+                  {[...Array(10).keys()].map(num => (
+                    <option key={num + 1} value={num + 1}>{num + 1}</option>
+                  ))}
+                </select>
+              </div>
+              
+              {product.stock !== undefined && (
+                <span className={`text-sm ${product.stock > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                  {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
+                </span>
+              )}
+            </div>
+
+            <AddToCartButton product={product} quantity={quantity} />
+          </div>
+
+          <div className="space-y-3 text-sm">
+            {product.shippingInformation && (
+              <div className="flex gap-2">
+                <svg className="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+                <span>{product.shippingInformation}</span>
+              </div>
+            )}
+            {product.returnPolicy && (
+              <div className="flex gap-2">
+                <svg className="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                </svg>
+                <span>{product.returnPolicy}</span>
+              </div>
+            )}
+            {product.warrantyInformation && (
+              <div className="flex gap-2">
+                <svg className="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                <span>{product.warrantyInformation}</span>
               </div>
             )}
           </div>
-          <div className="md:w-1/2 p-6 md:p-8">
-            <div className="mb-4">
-              <span className="inline-block bg-primary-100 dark:bg-gray-700 text-primary-600 dark:text-primary-400 text-xs px-2 py-1 rounded-full uppercase font-semibold tracking-wide">
-                {product.category}
-              </span>
-            </div>
+        </div>
 
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-4">
-              {product.title}
-            </h1>
-
-            <p className="text-3xl font-bold text-primary-600 dark:text-primary-400 mb-4">
-              ${product.price.toFixed(2)}
-            </p>
-
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              {product.description}
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm mb-6">
-              {product.brand && (
-                <div><span className="font-medium">Brand:</span> {product.brand}</div>
-              )}
+        {/* Product Details Section */}
+        <div className="lg:w-3/12">
+          <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+            <h3 className="font-bold text-lg mb-3">Product Details</h3>
+            
+            <div className="space-y-3 text-sm">
               {product.sku && (
-                <div><span className="font-medium">SKU:</span> {product.sku}</div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-300">SKU</span>
+                  <span>{product.sku}</span>
+                </div>
               )}
-              {product.rating !== undefined && (
-                <div><span className="font-medium">Rating:</span> {product.rating}</div>
-              )}
-              {product.discountPercentage !== undefined && (
-                <div><span className="font-medium">Discount:</span> {product.discountPercentage}%</div>
-              )}
-              {product.stock !== undefined && (
-                <div><span className="font-medium">Stock:</span> {product.stock}</div>
+              {product.category && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-300">Category</span>
+                  <span>{product.category}</span>
+                </div>
               )}
               {product.weight !== undefined && (
-                <div><span className="font-medium">Weight:</span> {product.weight}</div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-300">Weight</span>
+                  <span>{product.weight} lbs</span>
+                </div>
               )}
               {product.dimensions && (
-                <div><span className="font-medium">Dimensions:</span> {product.dimensions.width}x{product.dimensions.height}x{product.dimensions.depth}</div>
-              )}
-              {product.warrantyInformation && (
-                <div><span className="font-medium">Warranty:</span> {product.warrantyInformation}</div>
-              )}
-              {product.shippingInformation && (
-                <div><span className="font-medium">Shipping:</span> {product.shippingInformation}</div>
-              )}
-              {product.availabilityStatus && (
-                <div><span className="font-medium">Availability:</span> {product.availabilityStatus}</div>
-              )}
-              {product.returnPolicy && (
-                <div><span className="font-medium">Return Policy:</span> {product.returnPolicy}</div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-300">Dimensions</span>
+                  <span>{product.dimensions.width}x{product.dimensions.height}x{product.dimensions.depth} in</span>
+                </div>
               )}
               {product.minimumOrderQuantity !== undefined && (
-                <div><span className="font-medium">Min Order Qty:</span> {product.minimumOrderQuantity}</div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-300">Min Order Qty</span>
+                  <span>{product.minimumOrderQuantity}</span>
+                </div>
               )}
               {product.tags && product.tags.length > 0 && (
-                <div className="sm:col-span-2"><span className="font-medium">Tags:</span> {product.tags.join(', ')}</div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-300">Tags</span>
+                  <span className="text-right">{product.tags.join(', ')}</span>
+                </div>
               )}
               {product.meta && (
                 <>
-                  <div><span className="font-medium">Barcode:</span> {product.meta.barcode}</div>
-                  <div><span className="font-medium">Created:</span> {new Date(product.meta.createdAt).toLocaleDateString()}</div>
-                  <div><span className="font-medium">Updated:</span> {new Date(product.meta.updatedAt).toLocaleDateString()}</div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-300">Barcode</span>
+                    <span>{product.meta.barcode}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-300">Added</span>
+                    <span>{new Date(product.meta.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-300">Updated</span>
+                    <span>{new Date(product.meta.updatedAt).toLocaleDateString()}</span>
+                  </div>
                 </>
               )}
             </div>
-
-
-            <AddToCartButton product={product} />
           </div>
         </div>
-        {product.reviews && product.reviews.length > 0 && (
-          <div className="p-6 md:p-8 border-t border-gray-200 dark:border-gray-700">
-            <h2 className="text-xl font-semibold mb-4">Reviews</h2>
-            <div className="space-y-4">
-              {product.reviews.map((r, idx) => (
-                <div key={idx} className="bg-gray-50 dark:bg-gray-700 p-4 rounded-md">
-                  <p className="text-sm mb-1"><span className="font-medium">{r.reviewerName}</span> rated {r.rating}/5</p>
-                  <p className="text-xs text-gray-500 mb-2">{new Date(r.date).toLocaleDateString()}</p>
-                  <p>{r.comment}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* Reviews Section */}
+      {product.reviews && product.reviews.length > 0 && (
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold mb-6">Customer Reviews</h2>
+          
+          <div className="grid md:grid-cols-2 gap-6">
+            {product.reviews.map((r, idx) => (
+              <div key={idx} className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <p className="font-medium">{r.reviewerName}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {new Date(r.date).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <RatingStars rating={r.rating} small />
+                </div>
+                <p className="text-sm">{r.comment}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
