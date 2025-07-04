@@ -61,13 +61,14 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const removeFromCart = (productId: number) => {
+    let removedProduct: ProductWithQty | undefined;
     setCartItems((prev) => {
-      const product = prev.find((p) => p.id === productId);
-        if (product) {
-          showToast(`Removed ${product.title} from cart`, 'error');
-        }
+      removedProduct = prev.find((p) => p.id === productId);
       return prev.filter((item) => item.id !== productId);
     });
+    if (removedProduct) {
+      showToast(`Removed ${removedProduct.title} from cart`, 'error');
+    }
   };
 
   const updateQuantity = (productId: number, qty: number) => {
