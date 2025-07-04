@@ -17,7 +17,7 @@ class User(db.Model):
     email = db.Column(db.String(255), unique=True, nullable=False)
     hashed_password = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    #updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     pantry_items = db.relationship('PantryItem', back_populates='user', cascade='all, delete-orphan')
     purchases = db.relationship('PurchaseHistory', back_populates='user', cascade='all, delete-orphan')
