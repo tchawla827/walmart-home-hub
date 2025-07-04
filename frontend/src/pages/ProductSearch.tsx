@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import { Product } from '../types';
-import { useCart } from '../context/CartContext';
 
 import api from '../api';
 
@@ -58,11 +57,6 @@ const ProductSearch: React.FC = () => {
 
   const categories = Array.from(new Set(products.map((p) => p.category)));
 
-  const { addToCart } = useCart();
-
-  const handleAddToCart = (product: Product) => {
-    addToCart(product);
-  };
 
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-6">
@@ -106,11 +100,7 @@ const ProductSearch: React.FC = () => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {filtered.map((product) => (
-            <ProductCard 
-              key={product.id} 
-              product={product} 
-              onAddToCart={handleAddToCart} 
-            />
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
       )}

@@ -1,16 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Product } from '../types';
-import { useCart } from '../context/CartContext';
+import AddToCartButton from '../components/AddToCartButton';
 import api from '../api';
-
-
-
-import { toast } from 'react-toastify';
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { addToCart } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -58,10 +53,6 @@ const ProductDetail: React.FC = () => {
     );
   }
 
-  const handleAddToCart = () => {
-    if (!product) return;
-    addToCart(product);
-  };
 
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-6">
@@ -105,12 +96,7 @@ const ProductDetail: React.FC = () => {
               {product.description}
             </p>
 
-            <button
-              onClick={handleAddToCart}
-              className="w-full bg-accent-400 hover:bg-accent-500 text-gray-900 px-6 py-3 rounded-md font-medium transition-all hover:scale-[1.02]"
-            >
-              Add to Cart
-            </button>
+            <AddToCartButton product={product} />
           </div>
         </div>
       </div>
