@@ -33,13 +33,16 @@ def ensure_user_schema() -> None:
         inspector = inspect(db.engine)
         if inspector.has_table("users"):
             columns = [c["name"] for c in inspector.get_columns("users")]
-            if "password_hash" not in columns:
+            if "hashed_password" not in columns:
                 with db.engine.begin() as conn:
                     conn.execute(
                         text(
-                            "ALTER TABLE users ADD COLUMN password_hash VARCHAR(255)"
+                            "ALTER TABLE users ADD COLUMN hashed_password VARCHAR(255)"
                         )
                     )
+        else:
+            # Table doesn't exist yet; create all tables based on models
+            db.create_all()
 
 
 ensure_user_schema()
@@ -61,7 +64,7 @@ def login():
         return jsonify({"error": "Email and password required"}), 400
 
     user = User.query.filter_by(email=email).first()
-    if user and bcrypt.check_password_hash(user.password_hash, password):
+    if user and bcrypt.check_password_hash(user.hashed_password, password):
         payload = {
             "user_id": str(user.id),
             "exp": datetime.utcnow() + timedelta(seconds=app.config["JWT_EXPIRY_SECONDS"]),
@@ -76,25 +79,21 @@ def register():
     data = request.get_json() or {}
     email = data.get("email")
     password = data.get("password")
-    name = data.get("name")
 
     if not email or not password:
         return jsonify({"error": "Email and password required"}), 400
 
     if User.query.filter_by(email=email).first():
-        return jsonify({"error": "Email already registered"}), 400
+        return jsonify({"error": "Email already registered"}), 409
 
-    password_hash = bcrypt.generate_password_hash(password).decode("utf-8")
-    user = User(email=email, name=name, password_hash=password_hash)
+    hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
+    user = User(email=email, hashed_password=hashed_password)
     db.session.add(user)
     db.session.commit()
-
-    payload = {
-        "user_id": str(user.id),
-        "exp": datetime.utcnow() + timedelta(seconds=app.config["JWT_EXPIRY_SECONDS"]),
-    }
-    token = jwt.encode(payload, app.config["SECRET_KEY"], algorithm="HS256")
-    return jsonify({"token": token}), 201
+    return (
+        jsonify({"id": str(user.id), "email": user.email}),
+        201,
+    )
 
 @app.route("/api/products", methods=["GET"])
 def get_products():
