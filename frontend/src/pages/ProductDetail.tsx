@@ -57,15 +57,6 @@ const ProductDetail: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
-      {/* Breadcrumb Navigation */}
-      <div className="text-sm breadcrumbs mb-6">
-        <ul>
-          <li><Link to="/">Home</Link></li> 
-          <li><Link to="/products">Products</Link></li>
-          <li><span className="text-gray-500">{product.category}</span></li>
-          <li className="font-medium">{product.title}</li>
-        </ul>
-      </div>
 
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Product Images Section */}
