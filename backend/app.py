@@ -40,6 +40,9 @@ def ensure_user_schema() -> None:
                             "ALTER TABLE users ADD COLUMN hashed_password VARCHAR(255)"
                         )
                     )
+        else:
+            # Table doesn't exist yet; create all tables based on models
+            db.create_all()
 
 
 ensure_user_schema()
