@@ -62,7 +62,6 @@ const ProductSearch: React.FC = () => {
 
   const handleAddToCart = (product: Product) => {
     addToCart(product);
-    toast.success(`${product.title} added to cart!`);
   };
 
   return (

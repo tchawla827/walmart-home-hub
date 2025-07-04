@@ -88,7 +88,6 @@ const CartPage: React.FC = () => {
               <button
                 onClick={() => {
                   removeFromCart(item.id);
-                  toast.error('Item removed from cart');
                 }}
                 className="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-md transition-all"
               >
@@ -105,7 +104,6 @@ const CartPage: React.FC = () => {
           <button 
             onClick={() => {
               clearCart();
-              toast.error('Cart cleared');
             }}
             className="text-red-500 hover:text-red-600 text-sm font-medium transition-colors"
           >
