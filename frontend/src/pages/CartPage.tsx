@@ -2,7 +2,18 @@ import React from 'react';
 import { useCart } from '../context/CartContext';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
-import { FiTrash2, FiArrowLeft } from 'react-icons/fi';
+import {
+  FiTrash2 as RawFiTrash2,
+  FiArrowLeft as RawFiArrowLeft,
+} from 'react-icons/fi';
+// react-icons ships its components with a return type of ReactNode which causes
+// a type error when used with React 19. Cast to a compatible component type.
+const FiTrash2 = RawFiTrash2 as unknown as React.FC<{
+  className?: string;
+}>;
+const FiArrowLeft = RawFiArrowLeft as unknown as React.FC<{
+  className?: string;
+}>;
 
 const CartPage: React.FC = () => {
   const { 
@@ -11,13 +22,18 @@ const CartPage: React.FC = () => {
     removeFromCart, 
     getSubtotal,
     getTotalItems,
-    getTotalSavings,
-    clearCart 
+    clearCart
   } = useCart();
 
   const subtotal = getSubtotal();
   const totalItems = getTotalItems();
-  const totalSavings = getTotalSavings();
+  const totalSavings = cartItems.reduce((sum, item) => {
+    if (item.discountPercentage) {
+      const original = item.price / (1 - item.discountPercentage / 100);
+      return sum + (original - item.price) * item.quantity;
+    }
+    return sum;
+  }, 0);
 
   const handleCheckout = () => {
     toast.success(`Order placed! Total: $${subtotal.toFixed(2)}`);
@@ -105,19 +121,28 @@ const CartPage: React.FC = () => {
                 >
                   {item.title}
                 </Link>
-                <p className="text-primary-600 dark:text-primary-400 font-bold">
-                  ${item.price.toFixed(2)}
-                  {item.originalPrice && (
-                    <span className="ml-2 text-sm text-gray-500 dark:text-gray-400 line-through">
-                      ${item.originalPrice.toFixed(2)}
-                    </span>
-                  )}
-                </p>
-                {item.originalPrice && (
-                  <p className="text-sm text-green-600 dark:text-green-400">
-                    You save ${(item.originalPrice - item.price).toFixed(2)} ({Math.round((1 - item.price / item.originalPrice) * 100)}%)
-                  </p>
-                )}
+                {(() => {
+                  const orig = item.discountPercentage
+                    ? item.price / (1 - item.discountPercentage / 100)
+                    : undefined;
+                  return (
+                    <>
+                      <p className="text-primary-600 dark:text-primary-400 font-bold">
+                        ${item.price.toFixed(2)}
+                        {orig && (
+                          <span className="ml-2 text-sm text-gray-500 dark:text-gray-400 line-through">
+                            ${orig.toFixed(2)}
+                          </span>
+                        )}
+                      </p>
+                      {orig && (
+                        <p className="text-sm text-green-600 dark:text-green-400">
+                          You save ${(orig - item.price).toFixed(2)} ({Math.round((1 - item.price / orig) * 100)}%)
+                        </p>
+                      )}
+                    </>
+                  );
+                })()}
               </div>
               
               <div className="flex items-center gap-4">
