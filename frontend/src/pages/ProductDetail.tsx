@@ -158,9 +158,6 @@ const ProductDetail: React.FC = () => {
               )}
             </div>
 
-            {product.meta?.qrCode && (
-              <img src={product.meta.qrCode} alt="QR Code" className="h-24 mb-4" />
-            )}
 
             <AddToCartButton product={product} />
           </div>
