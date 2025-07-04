@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
-import Profile from './pages/Profile';
+import ProfilePage from './pages/ProfilePage';
 import GiftGenius from './pages/GiftGenius';
 import ProductSearch from './pages/ProductSearch';
 import ProductList from './pages/ProductList';
@@ -45,7 +45,7 @@ const App: React.FC = () => {
           <Route path="/gift" element={<GiftGenius />} />
           <Route path="/bundle" element={<GiftBundlePage />} />
           <Route path="/cart" element={<CartPage />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile" element={<ProfilePage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/dashboard" element={<Dashboard />} />
