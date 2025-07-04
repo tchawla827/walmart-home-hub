@@ -11,6 +11,7 @@ import CartPage from './pages/CartPage';
 import PantrySetup from './pages/PantrySetup';
 import GiftBundlePage from './pages/GiftBundlePage';
 import Login from './pages/Login';
+import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import { CartProvider } from './context/CartContext';
 import { ToastContainer } from 'react-toastify';
@@ -46,6 +47,7 @@ const App: React.FC = () => {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </Router>

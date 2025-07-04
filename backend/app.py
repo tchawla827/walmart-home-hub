@@ -51,6 +51,32 @@ def login():
         return jsonify({"token": token})
     return jsonify({"error": "Invalid credentials"}), 401
 
+
+@app.route("/api/register", methods=["POST"])
+def register():
+    data = request.get_json() or {}
+    email = data.get("email")
+    password = data.get("password")
+    name = data.get("name")
+
+    if not email or not password:
+        return jsonify({"error": "Email and password required"}), 400
+
+    if User.query.filter_by(email=email).first():
+        return jsonify({"error": "Email already registered"}), 400
+
+    password_hash = bcrypt.generate_password_hash(password).decode("utf-8")
+    user = User(email=email, name=name, password_hash=password_hash)
+    db.session.add(user)
+    db.session.commit()
+
+    payload = {
+        "user_id": str(user.id),
+        "exp": datetime.utcnow() + timedelta(seconds=app.config["JWT_EXPIRY_SECONDS"]),
+    }
+    token = jwt.encode(payload, app.config["SECRET_KEY"], algorithm="HS256")
+    return jsonify({"token": token}), 201
+
 @app.route("/api/products", methods=["GET"])
 def get_products():
     """Fetch the first 100 products from DummyJSON."""
