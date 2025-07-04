@@ -34,11 +34,15 @@ const ProductSearch: React.FC = () => {
   useEffect(() => {
     if (query) {
       console.log(`Searching for: ${query}`);
-      toast.info(`Searching for: ${query}`);
+      toast.info(`Searching for: ${query}`, {
+        toastId: `search-${query}`,
+      });
     }
     if (category) {
       console.log(`Filtering category: ${category}`);
-      toast.info(`Filtering by: ${category}`);
+      toast.info(`Filtering by: ${category}`, {
+        toastId: `filter-${category}`,
+      });
     }
   }, [query, category]);
 
