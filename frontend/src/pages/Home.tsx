@@ -1,17 +1,44 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import api from '../api';
+import { Product } from '../types';
 
-const categories = [
-  { name: 'Grocery', image: 'https://via.placeholder.com/300?text=Grocery', slug: 'grocery' },
-  { name: 'Electronics', image: 'https://via.placeholder.com/300?text=Electronics', slug: 'electronics' },
-  { name: 'Home', image: 'https://via.placeholder.com/300?text=Home', slug: 'home' },
-  { name: 'Toys', image: 'https://via.placeholder.com/300?text=Toys', slug: 'toys' },
-  { name: 'Fashion', image: 'https://via.placeholder.com/300?text=Fashion', slug: 'fashion' },
-  { name: 'Sports', image: 'https://via.placeholder.com/300?text=Sports', slug: 'sports' },
-];
+interface Category {
+  name: string;
+  image: string;
+  slug: string;
+}
+
+const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 const Home: React.FC = () => {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await api.get<Product[]>("/api/products");
+        const map: Record<string, string> = {};
+        res.data.forEach((p) => {
+          if (!map[p.category]) {
+            map[p.category] = p.thumbnail;
+          }
+        });
+        const cats = Object.entries(map).map(([slug, image]) => ({
+          slug,
+          image,
+          name: capitalize(slug),
+        }));
+        setCategories(cats);
+      } catch (err) {
+        console.error("Failed to fetch categories", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCategories();
+
     console.log('Landing page rendered');
   }, []);
 
@@ -46,28 +73,32 @@ const Home: React.FC = () => {
         <h2 className="text-2xl md:text-3xl font-bold text-primary-600 dark:text-primary-400 mb-8 text-center">
           Shop by Category
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
-          {categories.map((cat) => (
-            <Link 
-              key={cat.slug} 
-              to={`/search?category=${cat.slug}`} 
-              className="group text-center bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1"
-            >
-              <div className="aspect-square overflow-hidden">
-                <img 
-                  src={cat.image} 
-                  alt={cat.name} 
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
-                />
-              </div>
-              <div className="p-3 md:p-4">
-                <h3 className="font-bold text-gray-900 dark:text-white group-hover:text-primary-500 transition-colors">
-                  {cat.name}
-                </h3>
-              </div>
-            </Link>
-          ))}
-        </div>
+        {loading ? (
+          <div className="text-center">Loading...</div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
+            {categories.map((cat) => (
+              <Link
+                key={cat.slug}
+                to={`/search?category=${cat.slug}`}
+                className="group text-center bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1"
+              >
+                <div className="aspect-square overflow-hidden">
+                  <img
+                    src={cat.image}
+                    alt={cat.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <div className="p-3 md:p-4">
+                  <h3 className="font-bold text-gray-900 dark:text-white group-hover:text-primary-500 transition-colors">
+                    {cat.name}
+                  </h3>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Feature Modules */}
