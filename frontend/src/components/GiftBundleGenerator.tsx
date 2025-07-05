@@ -4,8 +4,8 @@ import { GiftBundle } from '../types';
 import BudgetRangeSlider from './BudgetRangeSlider';
 
 const prompts = [
-  { label: "Sister's Birthday", value: "sister's birthday" },
-  { label: "Brother's Wedding", value: "brother's wedding" },
+  { label: "Sister Birthday", value: "sister birthday" },
+  { label: "Brother Wedding", value: "brother wedding" },
 ];
 
 const GiftBundleGenerator: React.FC = () => {

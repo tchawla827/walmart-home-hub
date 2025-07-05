@@ -16,6 +16,7 @@ import Dashboard from './pages/Dashboard';
 import { CartProvider } from './context/CartContext';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Import toast styling
+import GiftBundleGenerator from './components/GiftBundleGenerator';
 
 const App: React.FC = () => {
   return (
@@ -42,7 +43,7 @@ const App: React.FC = () => {
           <Route path="/products" element={<ProductList />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/pantry/setup" element={<PantrySetup />} />
-          <Route path="/gift" element={<GiftChatAssistant />} />
+          <Route path="/gift" element={<GiftBundleGenerator />} />
           <Route path="/bundle" element={<GiftBundlePage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/profile" element={<ProfilePage />} />

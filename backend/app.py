@@ -49,102 +49,7 @@ def ensure_user_schema() -> None:
 
 ensure_user_schema()
 
-# Sample product catalog used for mock gift bundle generation
-SAMPLE_PRODUCTS: List[Dict[str, any]] = [
-    {
-        "name": "Organic Apples",
-        "price": 3.99,
-        "imageUrl": "https://via.placeholder.com/300?text=Apples",
-        "description": "Crisp organic apples picked fresh from local farms.",
-    },
-    {
-        "name": "Wireless Headphones",
-        "price": 59.99,
-        "imageUrl": "https://via.placeholder.com/300?text=Headphones",
-        "description": "Bluetooth headphones with noise cancellation.",
-    },
-    {
-        "name": "Smart LED TV",
-        "price": 399.99,
-        "imageUrl": "https://via.placeholder.com/300?text=TV",
-        "description": "40-inch smart TV with built-in streaming apps.",
-    },
-    {
-        "name": "Comforter Set",
-        "price": 79.99,
-        "imageUrl": "https://via.placeholder.com/300?text=Comforter",
-        "description": "Plush queen-size comforter set to keep you cozy.",
-    },
-    {
-        "name": "Action Figure",
-        "price": 14.99,
-        "imageUrl": "https://via.placeholder.com/300?text=Action+Figure",
-        "description": "Collectible action figure with movable joints.",
-    },
-    {
-        "name": "Women's Sneakers",
-        "price": 49.99,
-        "imageUrl": "https://via.placeholder.com/300?text=Sneakers",
-        "description": "Comfortable sneakers perfect for everyday wear.",
-    },
-    {
-        "name": "Yoga Mat",
-        "price": 19.99,
-        "imageUrl": "https://via.placeholder.com/300?text=Yoga+Mat",
-        "description": "Non-slip yoga mat providing excellent grip.",
-    },
-    {
-        "name": "Blender",
-        "price": 29.99,
-        "imageUrl": "https://via.placeholder.com/300?text=Blender",
-        "description": "High-speed blender ideal for smoothies.",
-    },
-    {
-        "name": "Kids T-shirt",
-        "price": 9.99,
-        "imageUrl": "https://via.placeholder.com/300?text=Tshirt",
-        "description": "Soft cotton T-shirt with fun prints.",
-    },
-    {
-        "name": "Chocolate Cookies",
-        "price": 2.99,
-        "imageUrl": "https://via.placeholder.com/300?text=Cookies",
-        "description": "Rich chocolate chip cookies baked to perfection.",
-    },
-    {
-        "name": "Essence Mascara",
-        "price": 9.99,
-        "imageUrl": "https://via.placeholder.com/300?text=Mascara",
-        "description": "Volumizing mascara for dramatic lashes.",
-    },
-    {
-        "name": "Red Nail Polish",
-        "price": 8.99,
-        "imageUrl": "https://via.placeholder.com/300?text=Nail+Polish",
-        "description": "Quick-dry polish with a glossy finish.",
-    },
-    {
-        "name": "iPhone Charger",
-        "price": 19.99,
-        "imageUrl": "https://via.placeholder.com/300?text=Charger",
-        "description": "Fast-charging cable compatible with iPhones.",
-    },
-    {
-        "name": "Wireless Earphones",
-        "price": 49.99,
-        "imageUrl": "https://via.placeholder.com/300?text=Earphones",
-        "description": "Bluetooth earphones for music on the go.",
-    },
-    {
-        "name": "Selfie Stick",
-        "price": 12.99,
-        "imageUrl": "https://via.placeholder.com/300?text=Selfie+Stick",
-        "description": "Extendable stick for capturing selfies with ease.",
-    },
-]
 
-# Mapping for quick lookup by product name
-PRODUCT_LOOKUP = {p["name"]: p for p in SAMPLE_PRODUCTS}
 
 # Limited subset of DummyJSON products used for gift bundle generation
 DUMMY_PRODUCTS: Dict[int, Dict[str, any]] = {
@@ -161,45 +66,7 @@ DUMMY_PRODUCTS: Dict[int, Dict[str, any]] = {
     163: {"id": 163, "name": "Girl Summer Dress", "price": 19.99},
 }
 
-# Predefined bundles for certain common prompts
-SPECIAL_BUNDLES: Dict[str, List[Dict[str, any]]] = {
-    "sisters birthday": [
-        {
-            "title": "Pamper Her Day",
-            "items": [
-                PRODUCT_LOOKUP["Women's Sneakers"],
-                PRODUCT_LOOKUP["Yoga Mat"],
-                PRODUCT_LOOKUP["Chocolate Cookies"],
-            ],
-        },
-        {
-            "title": "Cozy Music Lover",
-            "items": [
-                PRODUCT_LOOKUP["Comforter Set"],
-                PRODUCT_LOOKUP["Wireless Headphones"],
-                PRODUCT_LOOKUP["Organic Apples"],
-            ],
-        },
-    ],
-    "brothers wedding": [
-        {
-            "title": "Newlywed Home Essentials",
-            "items": [
-                PRODUCT_LOOKUP["Blender"],
-                PRODUCT_LOOKUP["Comforter Set"],
-                PRODUCT_LOOKUP["Organic Apples"],
-            ],
-        },
-        {
-            "title": "Groom's Tech Starter",
-            "items": [
-                PRODUCT_LOOKUP["Smart LED TV"],
-                PRODUCT_LOOKUP["Wireless Headphones"],
-                PRODUCT_LOOKUP["Blender"],
-            ],
-        },
-    ],
-}
+
 
 
 def generate_curated_bundles(prompt: str, budget_range: Optional[Dict[str, float]] = None) -> List[Dict]:
@@ -249,8 +116,9 @@ def generate_curated_bundles(prompt: str, budget_range: Optional[Dict[str, float
     else:
         # Default fallback using SAMPLE_PRODUCTS
         base = []
+        dummy_values = list(DUMMY_PRODUCTS.values())
         for idx in range(2):
-            items = random.sample(SAMPLE_PRODUCTS, k=3)
+            items = random.sample(dummy_values, k=3)
             base.append({"title": f"Bundle {idx + 1}", "items": items})
 
     min_budget = budget_range.get("min") if budget_range else None
@@ -278,30 +146,6 @@ def generate_curated_bundles(prompt: str, budget_range: Optional[Dict[str, float
 
     return bundles
 
-
-def generate_mock_bundles(prompt: str, budget: Optional[float] = None) -> List[Dict]:
-    """Generate random gift bundles using SAMPLE_PRODUCTS."""
-    bundles: List[Dict] = []
-    num_bundles = random.randint(2, 3)
-
-    for idx in range(num_bundles):
-        num_items = random.randint(3, 5)
-        items = random.sample(SAMPLE_PRODUCTS, k=min(num_items, len(SAMPLE_PRODUCTS)))
-        total = sum(item["price"] for item in items)
-
-        if budget is not None:
-            items_sorted = sorted(items, key=lambda i: i["price"])
-            while total > budget and len(items_sorted) > 1:
-                removed = items_sorted.pop()
-                total -= removed["price"]
-            items = items_sorted
-
-        bundles.append({"title": f"Bundle {idx + 1}", "items": items, "totalPrice": round(total, 2)})
-
-    if budget is not None:
-        bundles = [b for b in bundles if b["totalPrice"] <= budget * 1.05] or bundles
-
-    return bundles
 
 @app.route("/")
 def hello():
@@ -401,21 +245,7 @@ def gift_bundles():
     return jsonify({"bundles": bundles})
 
 
-@app.route("/api/giftgenius/chat", methods=["POST"])
-def giftgenius_chat():
-    data = request.get_json() or {}
-    prompt = (data.get("prompt") or "").strip()
-    budget = data.get("budget")
-    if not prompt:
-        return jsonify({"error": "Prompt required"}), 400
 
-    try:
-        budget_val: Optional[float] = float(budget) if budget is not None else None
-    except (TypeError, ValueError):
-        budget_val = None
-
-    bundles = generate_mock_bundles(prompt, budget_val)
-    return jsonify({"bundles": bundles})
 
 if __name__ == "__main__":
     app.run(debug=True)
