@@ -181,6 +181,20 @@ def generate_mock_bundles(prompt: str, budget: Optional[float] = None) -> List[D
         items = list(bundle["items"])
         total = sum(i["price"] for i in items)
         if budget is not None:
+
+def generate_mock_bundles(prompt: str, budget: Optional[float] = None) -> List[Dict]:
+    """Generate mock gift bundles."""
+    bundles: List[Dict] = []
+    num_bundles = random.randint(2, 3)
+
+    for idx in range(num_bundles):
+        num_items = random.randint(3, 5)
+        items = random.sample(SAMPLE_PRODUCTS, k=min(num_items, len(SAMPLE_PRODUCTS)))
+
+        total = sum(item["price"] for item in items)
+
+        if budget is not None:
+            # Remove expensive items until under budget
             items_sorted = sorted(items, key=lambda i: i["price"])
             while total > budget and len(items_sorted) > 1:
                 removed = items_sorted.pop()
@@ -192,6 +206,19 @@ def generate_mock_bundles(prompt: str, budget: Optional[float] = None) -> List[D
         processed = [b for b in processed if b["totalPrice"] <= budget * 1.05] or processed
 
     return processed
+
+        bundles.append(
+            {
+                "title": f"Bundle {idx + 1}",
+                "items": items,
+                "totalPrice": round(total, 2),
+            }
+        )
+
+    if budget is not None:
+        bundles = [b for b in bundles if b["totalPrice"] <= budget * 1.05] or bundles
+
+    return bundles
 
 @app.route("/")
 def hello():
