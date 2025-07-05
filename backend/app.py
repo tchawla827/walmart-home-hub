@@ -111,10 +111,55 @@ SAMPLE_PRODUCTS: List[Dict[str, any]] = [
         "imageUrl": "https://via.placeholder.com/300?text=Cookies",
         "description": "Rich chocolate chip cookies baked to perfection.",
     },
+    {
+        "name": "Essence Mascara",
+        "price": 9.99,
+        "imageUrl": "https://via.placeholder.com/300?text=Mascara",
+        "description": "Volumizing mascara for dramatic lashes.",
+    },
+    {
+        "name": "Red Nail Polish",
+        "price": 8.99,
+        "imageUrl": "https://via.placeholder.com/300?text=Nail+Polish",
+        "description": "Quick-dry polish with a glossy finish.",
+    },
+    {
+        "name": "iPhone Charger",
+        "price": 19.99,
+        "imageUrl": "https://via.placeholder.com/300?text=Charger",
+        "description": "Fast-charging cable compatible with iPhones.",
+    },
+    {
+        "name": "Wireless Earphones",
+        "price": 49.99,
+        "imageUrl": "https://via.placeholder.com/300?text=Earphones",
+        "description": "Bluetooth earphones for music on the go.",
+    },
+    {
+        "name": "Selfie Stick",
+        "price": 12.99,
+        "imageUrl": "https://via.placeholder.com/300?text=Selfie+Stick",
+        "description": "Extendable stick for capturing selfies with ease.",
+    },
 ]
 
 # Mapping for quick lookup by product name
 PRODUCT_LOOKUP = {p["name"]: p for p in SAMPLE_PRODUCTS}
+
+# Limited subset of DummyJSON products used for gift bundle generation
+DUMMY_PRODUCTS: Dict[int, Dict[str, any]] = {
+    1: {"id": 1, "name": "Essence Mascara Lash Princess", "price": 9.99},
+    5: {"id": 5, "name": "Red Nail Polish", "price": 8.99},
+    6: {"id": 6, "name": "Calvin Klein CK One", "price": 49.99},
+    7: {"id": 7, "name": "Chanel Coco Noir Eau De", "price": 129.99},
+    8: {"id": 8, "name": "Dior J'adore", "price": 89.99},
+    104: {"id": 104, "name": "Apple iPhone Charger", "price": 19.99},
+    107: {"id": 107, "name": "Beats Flex Wireless Earphones", "price": 49.99},
+    111: {"id": 111, "name": "Selfie Stick Monopod", "price": 12.99},
+    83: {"id": 83, "name": "Blue & Black Check Shirt", "price": 29.99},
+    93: {"id": 93, "name": "Brown Leather Belt Watch", "price": 89.99},
+    163: {"id": 163, "name": "Girl Summer Dress", "price": 19.99},
+}
 
 # Predefined bundles for certain common prompts
 SPECIAL_BUNDLES: Dict[str, List[Dict[str, any]]] = {
@@ -157,63 +202,99 @@ SPECIAL_BUNDLES: Dict[str, List[Dict[str, any]]] = {
 }
 
 
-def generate_mock_bundles(prompt: str, budget: Optional[float] = None) -> List[Dict]:
-    """Generate mock gift bundles based on the prompt."""
+def generate_curated_bundles(prompt: str, budget_range: Optional[Dict[str, float]] = None) -> List[Dict]:
+    """Return curated bundles for predefined prompts filtered by budget range."""
     normalized = prompt.lower()
 
-    # Check for special cases first
     if "sister" in normalized and "birthday" in normalized:
-        bundles = SPECIAL_BUNDLES["sisters birthday"]
+        # Watch + perfume + beauty item under a typical budget
+        base = [
+            {
+                "title": "Stylish Birthday Picks",
+                "items": [
+                    DUMMY_PRODUCTS[6],  # perfume
+                    DUMMY_PRODUCTS[93],  # watch
+                    DUMMY_PRODUCTS[1],  # mascara
+                ],
+            },
+            {
+                "title": "Fragrance & Fashion",
+                "items": [
+                    DUMMY_PRODUCTS[8],  # perfume
+                    DUMMY_PRODUCTS[163],  # dress
+                    DUMMY_PRODUCTS[5],  # nail polish
+                ],
+            },
+        ]
     elif "brother" in normalized and "wedding" in normalized:
-        bundles = SPECIAL_BUNDLES["brothers wedding"]
+        base = [
+            {
+                "title": "Groom Essentials",
+                "items": [
+                    DUMMY_PRODUCTS[93],  # watch
+                    DUMMY_PRODUCTS[83],  # shirt
+                    DUMMY_PRODUCTS[6],  # cologne
+                ],
+            },
+            {
+                "title": "Wedding Prep Kit",
+                "items": [
+                    DUMMY_PRODUCTS[93],  # watch
+                    DUMMY_PRODUCTS[83],  # shirt
+                    DUMMY_PRODUCTS[8],  # premium cologne
+                ],
+            },
+        ]
     else:
-        # Create random bundles if no special prompt matched
-        bundles = []
-        num_bundles = random.randint(2, 3)
-        for idx in range(num_bundles):
-            num_items = random.randint(3, 5)
-            items = random.sample(SAMPLE_PRODUCTS, k=min(num_items, len(SAMPLE_PRODUCTS)))
-            bundles.append({"title": f"Bundle {idx + 1}", "items": items})
+        # Default fallback using SAMPLE_PRODUCTS
+        base = []
+        for idx in range(2):
+            items = random.sample(SAMPLE_PRODUCTS, k=3)
+            base.append({"title": f"Bundle {idx + 1}", "items": items})
 
-    # Calculate totals and optionally trim to budget
-    processed = []
-    for bundle in bundles:
-        items = list(bundle["items"])
-        total = sum(i["price"] for i in items)
-        if budget is not None:
+    min_budget = budget_range.get("min") if budget_range else None
+    max_budget = budget_range.get("max") if budget_range else None
+
+    bundles: List[Dict] = []
+    for bundle in base:
+        total = sum(item["price"] for item in bundle["items"])
+        if (min_budget is not None and total < min_budget) or (
+            max_budget is not None and total > max_budget
+        ):
+            continue
+        bundles.append({"title": bundle["title"], "items": bundle["items"], "totalPrice": round(total, 2)})
+    if not bundles:
+        # If nothing met the budget criteria, return all bundles unfiltered
+        bundles = [
+            {
+                "title": b["title"],
+                "items": b["items"],
+                "totalPrice": round(sum(i["price"] for i in b["items"]), 2),
+            }
+            for b in base
+        ]
+
+    return bundles
+
 
 def generate_mock_bundles(prompt: str, budget: Optional[float] = None) -> List[Dict]:
-    """Generate mock gift bundles."""
+    """Generate random gift bundles using SAMPLE_PRODUCTS."""
     bundles: List[Dict] = []
     num_bundles = random.randint(2, 3)
 
     for idx in range(num_bundles):
         num_items = random.randint(3, 5)
         items = random.sample(SAMPLE_PRODUCTS, k=min(num_items, len(SAMPLE_PRODUCTS)))
-
         total = sum(item["price"] for item in items)
 
         if budget is not None:
-            # Remove expensive items until under budget
             items_sorted = sorted(items, key=lambda i: i["price"])
             while total > budget and len(items_sorted) > 1:
                 removed = items_sorted.pop()
                 total -= removed["price"]
             items = items_sorted
-        processed.append({"title": bundle["title"], "items": items, "totalPrice": round(total, 2)})
 
-    if budget is not None:
-        processed = [b for b in processed if b["totalPrice"] <= budget * 1.05] or processed
-
-    return processed
-
-        bundles.append(
-            {
-                "title": f"Bundle {idx + 1}",
-                "items": items,
-                "totalPrice": round(total, 2),
-            }
-        )
+        bundles.append({"title": f"Bundle {idx + 1}", "items": items, "totalPrice": round(total, 2)})
 
     if budget is not None:
         bundles = [b for b in bundles if b["totalPrice"] <= budget * 1.05] or bundles
@@ -294,6 +375,28 @@ def get_product(product_id: int):
         return jsonify({"error": "Failed to fetch product"}), 500
 
     return jsonify(data)
+
+
+@app.route("/api/gift-bundles", methods=["POST"])
+def gift_bundles():
+    """Generate curated gift bundles based on prompt and budget range."""
+    data = request.get_json() or {}
+    prompt = (data.get("prompt") or "").strip()
+    budget_range = data.get("budgetRange") or {}
+
+    if not prompt:
+        return jsonify({"error": "Prompt required"}), 400
+
+    try:
+        br = {
+            "min": float(budget_range.get("min", 0)),
+            "max": float(budget_range.get("max", 0)),
+        }
+    except (TypeError, ValueError):
+        br = {}
+
+    bundles = generate_curated_bundles(prompt, br)
+    return jsonify({"bundles": bundles})
 
 
 @app.route("/api/giftgenius/chat", methods=["POST"])

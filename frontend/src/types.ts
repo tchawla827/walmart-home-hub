@@ -44,6 +44,7 @@ export interface Product {
 }
 
 export interface GiftItem {
+  id?: number;
   name: string;
   price: number;
   imageUrl: string;
