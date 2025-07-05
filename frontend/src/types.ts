@@ -42,3 +42,16 @@ export interface Product {
   images: string[];
   reviews?: Review[];
 }
+
+export interface GiftItem {
+  name: string;
+  price: number;
+  imageUrl: string;
+  description: string;
+}
+
+export interface GiftBundle {
+  title: string;
+  items: GiftItem[];
+  totalPrice: number;
+}
