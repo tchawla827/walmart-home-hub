@@ -113,6 +113,74 @@ SAMPLE_PRODUCTS: List[Dict[str, any]] = [
     },
 ]
 
+# Mapping for quick lookup by product name
+PRODUCT_LOOKUP = {p["name"]: p for p in SAMPLE_PRODUCTS}
+
+# Predefined bundles for certain common prompts
+SPECIAL_BUNDLES: Dict[str, List[Dict[str, any]]] = {
+    "sisters birthday": [
+        {
+            "title": "Pamper Her Day",
+            "items": [
+                PRODUCT_LOOKUP["Women's Sneakers"],
+                PRODUCT_LOOKUP["Yoga Mat"],
+                PRODUCT_LOOKUP["Chocolate Cookies"],
+            ],
+        },
+        {
+            "title": "Cozy Music Lover",
+            "items": [
+                PRODUCT_LOOKUP["Comforter Set"],
+                PRODUCT_LOOKUP["Wireless Headphones"],
+                PRODUCT_LOOKUP["Organic Apples"],
+            ],
+        },
+    ],
+    "brothers wedding": [
+        {
+            "title": "Newlywed Home Essentials",
+            "items": [
+                PRODUCT_LOOKUP["Blender"],
+                PRODUCT_LOOKUP["Comforter Set"],
+                PRODUCT_LOOKUP["Organic Apples"],
+            ],
+        },
+        {
+            "title": "Groom's Tech Starter",
+            "items": [
+                PRODUCT_LOOKUP["Smart LED TV"],
+                PRODUCT_LOOKUP["Wireless Headphones"],
+                PRODUCT_LOOKUP["Blender"],
+            ],
+        },
+    ],
+}
+
+
+def generate_mock_bundles(prompt: str, budget: Optional[float] = None) -> List[Dict]:
+    """Generate mock gift bundles based on the prompt."""
+    normalized = prompt.lower()
+
+    # Check for special cases first
+    if "sister" in normalized and "birthday" in normalized:
+        bundles = SPECIAL_BUNDLES["sisters birthday"]
+    elif "brother" in normalized and "wedding" in normalized:
+        bundles = SPECIAL_BUNDLES["brothers wedding"]
+    else:
+        # Create random bundles if no special prompt matched
+        bundles = []
+        num_bundles = random.randint(2, 3)
+        for idx in range(num_bundles):
+            num_items = random.randint(3, 5)
+            items = random.sample(SAMPLE_PRODUCTS, k=min(num_items, len(SAMPLE_PRODUCTS)))
+            bundles.append({"title": f"Bundle {idx + 1}", "items": items})
+
+    # Calculate totals and optionally trim to budget
+    processed = []
+    for bundle in bundles:
+        items = list(bundle["items"])
+        total = sum(i["price"] for i in items)
+        if budget is not None:
 
 def generate_mock_bundles(prompt: str, budget: Optional[float] = None) -> List[Dict]:
     """Generate mock gift bundles."""
@@ -132,6 +200,12 @@ def generate_mock_bundles(prompt: str, budget: Optional[float] = None) -> List[D
                 removed = items_sorted.pop()
                 total -= removed["price"]
             items = items_sorted
+        processed.append({"title": bundle["title"], "items": items, "totalPrice": round(total, 2)})
+
+    if budget is not None:
+        processed = [b for b in processed if b["totalPrice"] <= budget * 1.05] or processed
+
+    return processed
 
         bundles.append(
             {
