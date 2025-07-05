@@ -207,14 +207,44 @@ def generate_curated_bundles(prompt: str, budget_range: Optional[Dict[str, float
     normalized = prompt.lower()
 
     if "sister" in normalized and "birthday" in normalized:
+        # Watch + perfume + beauty item under a typical budget
         base = [
-            {"title": "Stylish Birthday Picks", "items": [DUMMY_PRODUCTS[7], DUMMY_PRODUCTS[93], DUMMY_PRODUCTS[163]]},
-            {"title": "Fragrance & Fashion", "items": [DUMMY_PRODUCTS[6], DUMMY_PRODUCTS[93], DUMMY_PRODUCTS[163]]},
+            {
+                "title": "Stylish Birthday Picks",
+                "items": [
+                    DUMMY_PRODUCTS[6],  # perfume
+                    DUMMY_PRODUCTS[93],  # watch
+                    DUMMY_PRODUCTS[1],  # mascara
+                ],
+            },
+            {
+                "title": "Fragrance & Fashion",
+                "items": [
+                    DUMMY_PRODUCTS[8],  # perfume
+                    DUMMY_PRODUCTS[163],  # dress
+                    DUMMY_PRODUCTS[5],  # nail polish
+                ],
+            },
         ]
     elif "brother" in normalized and "wedding" in normalized:
         base = [
-            {"title": "Groom Essentials", "items": [DUMMY_PRODUCTS[93], DUMMY_PRODUCTS[83], DUMMY_PRODUCTS[8]]},
-            {"title": "Wedding Prep Kit", "items": [DUMMY_PRODUCTS[93], DUMMY_PRODUCTS[83], DUMMY_PRODUCTS[6]]},
+            {
+                "title": "Groom Essentials",
+                "items": [
+                    DUMMY_PRODUCTS[93],  # watch
+                    DUMMY_PRODUCTS[83],  # shirt
+                    DUMMY_PRODUCTS[6],  # cologne
+                ],
+            },
+            {
+                "title": "Wedding Prep Kit",
+                "items": [
+                    DUMMY_PRODUCTS[93],  # watch
+                    DUMMY_PRODUCTS[83],  # shirt
+                    DUMMY_PRODUCTS[8],  # premium cologne
+                ],
+            },
+
         ]
     else:
         # Default fallback using SAMPLE_PRODUCTS
@@ -234,6 +264,17 @@ def generate_curated_bundles(prompt: str, budget_range: Optional[Dict[str, float
         ):
             continue
         bundles.append({"title": bundle["title"], "items": bundle["items"], "totalPrice": round(total, 2)})
+    if not bundles:
+        # If nothing met the budget criteria, return all bundles unfiltered
+        bundles = [
+            {
+                "title": b["title"],
+                "items": b["items"],
+                "totalPrice": round(sum(i["price"] for i in b["items"]), 2),
+            }
+            for b in base
+        ]
+
 
     return bundles
 
