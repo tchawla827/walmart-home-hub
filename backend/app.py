@@ -244,6 +244,7 @@ def generate_curated_bundles(prompt: str, budget_range: Optional[Dict[str, float
                     DUMMY_PRODUCTS[8],  # premium cologne
                 ],
             },
+
         ]
     else:
         # Default fallback using SAMPLE_PRODUCTS
@@ -273,6 +274,7 @@ def generate_curated_bundles(prompt: str, budget_range: Optional[Dict[str, float
             }
             for b in base
         ]
+
 
     return bundles
 
