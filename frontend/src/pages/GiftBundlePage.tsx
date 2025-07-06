@@ -17,7 +17,7 @@ const GiftBundlePage: React.FC = () => {
     title: b.title,
     items: b.items.map((item) => ({
       id: item.id,
-      name: item.title,
+      name: (item as any).title ?? (item as any).name ?? '',
       price: item.price,
       imageUrl: (item as any).image ?? (item as any).thumbnail,
       description: item.description,
