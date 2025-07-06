@@ -210,6 +210,24 @@ def get_products():
     return jsonify(data.get("products", []))
 
 
+@app.route("/api/products/search", methods=["GET"])
+def search_products():
+    """Search products by query string using DummyJSON."""
+    query = (request.args.get("q") or "").strip()
+    if not query:
+        return jsonify([])
+    try:
+        resp = requests.get(
+            "https://dummyjson.com/products/search", params={"q": query}
+        )
+        resp.raise_for_status()
+        data = resp.json()
+    except requests.RequestException:
+        return jsonify({"error": "Failed to search products"}), 500
+
+    return jsonify(data.get("products", []))
+
+
 @app.route("/api/products/<int:product_id>", methods=["GET"])
 def get_product(product_id: int):
     """Fetch a single product by id from DummyJSON."""
