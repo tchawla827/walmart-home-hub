@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import api from '../api';
+import { Product } from '../types';
+import { mockProducts } from '../mockProducts';
 
 export interface PantryItem {
   id: string;
@@ -25,6 +27,10 @@ const PantrySetup: React.FC = () => {
   const [quantity, setQuantity] = useState<number>(0);
   const [unit, setUnit] = useState<PantryItem['unit']>('count');
   const [dailyRate, setDailyRate] = useState<number>(0);
+  const [search, setSearch] = useState('');
+  const [results, setResults] = useState<Product[]>([]);
+  const [showResults, setShowResults] = useState(false);
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   const resetForm = () => {
     setName('');
@@ -52,9 +58,11 @@ const PantrySetup: React.FC = () => {
             : it
         )
       );
+      console.log('Form payload (edit)', { id: editingId, name, category, quantity, unit, dailyRate });
       toast.success('Item updated');
     } else {
       const newItem: PantryItem = { id: generateId(), name, category, quantity, unit, dailyRate };
+      console.log('Form payload (add)', newItem);
       setItems((prev) => [...prev, newItem]);
       toast.success('Item added');
     }
@@ -89,10 +97,71 @@ const PantrySetup: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    if (!search) {
+      setResults([]);
+      return;
+    }
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(async () => {
+      console.log(`API call: /api/products/search?q=${search}`);
+      try {
+        const res = await api.get<Product[]>('/api/products/search', {
+          params: { q: search },
+        });
+        console.log('Search results', res.data);
+        setResults(res.data);
+      } catch (err) {
+        console.error('Search failed, falling back to mock', err);
+        const filtered = mockProducts.filter((p) =>
+          p.title.toLowerCase().includes(search.toLowerCase())
+        );
+        setResults(filtered as unknown as Product[]);
+      }
+      setShowResults(true);
+    }, 300);
+  }, [search]);
+
+  const handleSelectProduct = (product: Product) => {
+    setName(product.title || product.name);
+    setCategory(product.category);
+    setShowResults(false);
+    setResults([]);
+    setSearch('');
+  };
+
   return (
     <div className="max-w-3xl mx-auto p-4 space-y-6">
       <h1 className="text-2xl font-bold text-primary-600 dark:text-primary-400">Pantry Setup</h1>
-      <form onSubmit={handleAddItem} className="grid grid-cols-1 md:grid-cols-5 gap-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+      <form onSubmit={handleAddItem} className="grid grid-cols-1 md:grid-cols-5 gap-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow relative">
+        <div className="md:col-span-5 relative">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search products"
+            className="w-full border border-gray-300 dark:border-gray-600 rounded p-2"
+          />
+          {showResults && results.length > 0 && (
+            <ul className="absolute z-10 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 w-full max-h-60 overflow-y-auto mt-1 rounded shadow">
+              {results.map((p) => (
+                <li
+                  key={p.id}
+                  onClick={() => handleSelectProduct(p)}
+                  className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
+                >
+                  {p.thumbnail && (
+                    <img src={p.thumbnail} alt={p.title} className="w-8 h-8 object-cover" />
+                  )}
+                  <div>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">{p.title}</p>
+                    <p className="text-xs text-gray-500">{p.category}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
         <input
           type="text"
           value={name}
