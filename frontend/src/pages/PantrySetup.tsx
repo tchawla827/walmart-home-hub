@@ -123,7 +123,7 @@ const PantrySetup: React.FC = () => {
   }, [search]);
 
   const handleSelectProduct = (product: Product) => {
-    setName(product.title || product.name);
+    setName(product.title || product.name || '');
     setCategory(product.category);
     setShowResults(false);
     setResults([]);
