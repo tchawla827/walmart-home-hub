@@ -247,15 +247,19 @@ def gift_bundles():
     data = request.get_json() or {}
     prompt = (data.get("prompt") or "").strip()
     budget_range = data.get("budgetRange") or {}
+    budget = data.get("budget")
 
     if not prompt:
         return jsonify({"error": "Prompt required"}), 400
 
     try:
-        br = {
-            "min": float(budget_range.get("min", 0)),
-            "max": float(budget_range.get("max", 0)),
-        }
+        if budget is not None:
+            br = {"min": 0, "max": float(budget)}
+        else:
+            br = {
+                "min": float(budget_range.get("min", 0)),
+                "max": float(budget_range.get("max", 0)),
+            }
     except (TypeError, ValueError):
         br = {}
 

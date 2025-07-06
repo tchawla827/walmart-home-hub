@@ -1,21 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import api from '../api';
 import { GiftBundle } from '../types';
-import BudgetRangeSlider from './BudgetRangeSlider';
+import BudgetSlider from './BudgetSlider';
 
 const GiftBundleGenerator: React.FC = () => {
   const [prompt, setPrompt] = useState('');
-  const [range, setRange] = useState<[number, number]>([50, 150]);
+  const [lastPrompt, setLastPrompt] = useState('');
+  const [budget, setBudget] = useState(100);
   const [bundles, setBundles] = useState<GiftBundle[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchBundles = async () => {
+  const fetchBundles = async (p: string) => {
     setLoading(true);
     try {
-      console.log('Fetching gift bundles for prompt:', prompt);
+      console.log('Fetching gift bundles for prompt:', p, 'budget', budget);
       const res = await api.post<{ bundles: GiftBundle[] }>('/api/gift-bundles', {
-        prompt,
-        budgetRange: { min: range[0], max: range[1] },
+        prompt: p,
+        budget,
       });
       setBundles(res.data.bundles);
     } catch (err) {
@@ -29,12 +30,22 @@ const GiftBundleGenerator: React.FC = () => {
     console.log('Add All to Cart', bundle);
   };
 
+  // Re-fetch bundles when budget changes after initial search
+  useEffect(() => {
+    if (!lastPrompt) return;
+    const t = setTimeout(() => {
+      fetchBundles(lastPrompt);
+    }, 300);
+    return () => clearTimeout(t);
+  }, [budget]);
+
   return (
     <div className="max-w-xl mx-auto p-4 space-y-4">
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          fetchBundles();
+          fetchBundles(prompt);
+          setLastPrompt(prompt);
         }}
         className="space-y-4"
       >
@@ -51,7 +62,7 @@ const GiftBundleGenerator: React.FC = () => {
           />
         </div>
 
-        <BudgetRangeSlider min={25} max={500} values={range} onChange={setRange} />
+        <BudgetSlider min={25} max={500} value={budget} onChange={setBudget} />
 
         <button
           type="submit"
