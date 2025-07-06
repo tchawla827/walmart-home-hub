@@ -1,12 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { GiftBundle } from '../mockGiftGenius';
+import type { GiftBundle as GeneratedGiftBundle } from '../mockGiftGenius';
 import { toast } from 'react-toastify';
+import { mockProducts } from '../mockProducts';
+import BundleCustomizer from '../components/BundleCustomizer';
+import { GiftBundle, Product } from '../types';
 
 const GiftBundlePage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const bundle = (location.state as { bundle?: GiftBundle } | undefined)?.bundle;
+  const bundle = (location.state as { bundle?: GeneratedGiftBundle } | undefined)?.bundle;
+
+  const convertBundle = (b: GeneratedGiftBundle): GiftBundle => ({
+    title: b.title,
+    items: b.items.map((item) => ({
+      id: item.id,
+      name: item.title,
+      price: item.price,
+      imageUrl: (item as any).image ?? (item as any).thumbnail,
+      description: item.description,
+    })),
+    totalPrice: b.totalPrice,
+  });
 
   if (!bundle) {
     return (
@@ -29,11 +44,25 @@ const GiftBundlePage: React.FC = () => {
     );
   }
 
-  const handleAddAllToCart = () => {
-    // You'll need to implement this function or get it from context
-    toast.success(`Added "${bundle.title}" bundle to cart!`);
+  const [currentBundle, setCurrentBundle] = useState<GiftBundle>(convertBundle(bundle));
+
+  const availableItems: Product[] = mockProducts.map((p) => ({
+    id: p.id,
+    title: p.title,
+    description: p.description,
+    price: p.price,
+    category: p.category,
+    thumbnail: (p as any).thumbnail ?? p.image,
+    images: [(p as any).image],
+  }));
+
+  const handleUpdate = (updated: GiftBundle) => {
+    setCurrentBundle(updated);
   };
 
+  const handleAddAllToCart = () => {
+    toast.success(`Added "${currentBundle.title}" bundle to cart!`);
+  };
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-6">
       <button
@@ -46,66 +75,24 @@ const GiftBundlePage: React.FC = () => {
         Back to Bundles
       </button>
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden mb-8">
-        <div className="p-6 bg-primary-50 dark:bg-gray-700">
-          <h1 className="text-2xl md:text-3xl font-bold text-primary-600 dark:text-primary-400 mb-2">
-            {bundle.title}
-          </h1>
-        </div>
-
-        <div className="p-6">
-          <div className="space-y-4 mb-6">
-            {bundle.items.map((item) => (
-              <div
-                key={item.id}
-                className="flex flex-col sm:flex-row border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-md transition-all"
-              >
-                <Link
-                  to={`/product/${item.id}`}
-                  className="block sm:w-1/3 h-48 bg-white p-4"
-                >
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="w-full h-full object-contain"
-                  />
-                </Link>
-                <div className="flex-1 p-4">
-                  <Link to={`/product/${item.id}`} className="block">
-                    <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-1 hover:text-primary-500 transition-colors">
-                      {item.title}
-                    </h3>
-                  </Link>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm mb-2">{item.description}</p>
-                  <p className="text-primary-600 dark:text-primary-400 font-bold">
-                    ${item.price.toFixed(2)}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="flex flex-col sm:flex-row justify-between items-center bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-            <div className="mb-4 sm:mb-0">
-              <p className="text-gray-500 dark:text-gray-400">Bundle includes {bundle.items.length} items</p>
-              <p className="text-xl font-bold text-primary-600 dark:text-primary-400">
-                Total: ${bundle.totalPrice.toFixed(2)}
-                <span className="text-sm text-green-600 dark:text-green-400 ml-2">
-                  (Save ${(bundle.items.reduce((sum, item) => sum + item.price, 0) - bundle.totalPrice).toFixed(2)})
-                </span>
-              </p>
-            </div>
-            <button
-              onClick={handleAddAllToCart}
-              className="bg-accent-400 hover:bg-accent-500 text-gray-900 px-6 py-3 rounded-md font-medium transition-all hover:scale-[1.02] w-full sm:w-auto text-center"
-            >
-              Add All to Cart
-            </button>
-          </div>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden mb-8 p-6">
+        <BundleCustomizer
+          bundle={currentBundle}
+          availableItems={availableItems}
+          onUpdate={handleUpdate}
+        />
+        <div className="mt-6 text-center">
+          <button
+            onClick={handleAddAllToCart}
+            className="bg-accent-400 hover:bg-accent-500 text-gray-900 px-6 py-3 rounded-md font-medium transition-all hover:scale-[1.02] w-full sm:w-auto text-center"
+          >
+            Add Bundle to Cart
+          </button>
         </div>
       </div>
     </div>
   );
+
 };
 
 export default GiftBundlePage;
