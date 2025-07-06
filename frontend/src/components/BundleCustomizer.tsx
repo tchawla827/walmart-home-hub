@@ -81,11 +81,6 @@ const BundleCustomizer: React.FC<Props> = ({ bundle, availableItems: initialAvai
               key={idx}
               className="flex items-center gap-4 border border-gray-200 dark:border-gray-700 rounded-lg p-3"
             >
-              <img
-                src={item.imageUrl}
-                alt={item.name}
-                className="w-16 h-16 object-cover rounded"
-              />
               <div className="flex-1">
                 <p className="font-medium text-gray-900 dark:text-white">
                   {item.name}
@@ -133,12 +128,8 @@ const BundleCustomizer: React.FC<Props> = ({ bundle, availableItems: initialAvai
                       key={prod.id}
                       className="border border-gray-200 dark:border-gray-700 rounded-lg p-2 flex flex-col bg-white dark:bg-gray-800"
                     >
-                      <img
-                        src={prod.thumbnail}
-                        alt={prod.title}
-                        className="w-full h-20 object-contain"
-                      />
-                      <div className="flex-1 mt-1">
+                      <div className="flex-1">
+
                         <p className="text-xs font-medium line-clamp-2 text-gray-900 dark:text-white">
                           {prod.title}
                         </p>
