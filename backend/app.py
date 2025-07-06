@@ -126,12 +126,30 @@ def generate_curated_bundles(prompt: str, budget_range: Optional[Dict[str, float
 
     bundles: List[Dict] = []
     for bundle in base:
-        total = sum(item["price"] for item in bundle["items"])
-        if (min_budget is not None and total < min_budget) or (
-            max_budget is not None and total > max_budget
-        ):
+        items = list(bundle["items"])
+        total = sum(item["price"] for item in items)
+
+        if max_budget is not None:
+            # Remove most expensive items until under budget, leaving at least one
+            items.sort(key=lambda x: x["price"])
+            while len(items) > 1 and total > max_budget:
+                removed = items.pop()  # remove highest price
+                total -= removed["price"]
+
+            # Try adding cheaper extras if budget allows
+            if total < max_budget:
+                extras = [p for p in DUMMY_PRODUCTS.values() if p not in items]
+                extras.sort(key=lambda x: x["price"])
+                for prod in extras:
+                    if total + prod["price"] <= max_budget:
+                        items.append(prod)
+                        total += prod["price"]
+
+        if min_budget is not None and total < min_budget:
             continue
-        bundles.append({"title": bundle["title"], "items": bundle["items"], "totalPrice": round(total, 2)})
+
+        bundles.append({"title": bundle["title"], "items": items, "totalPrice": round(total, 2)})
+
     if not bundles:
         # If nothing met the budget criteria, return all bundles unfiltered
         bundles = [
@@ -142,7 +160,6 @@ def generate_curated_bundles(prompt: str, budget_range: Optional[Dict[str, float
             }
             for b in base
         ]
-
 
     return bundles
 
