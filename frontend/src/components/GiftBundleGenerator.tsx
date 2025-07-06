@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../api';
 import { GiftBundle } from '../types';
+import { useCart, ProductWithQty } from '../context/CartContext';
+import { toast } from 'react-toastify';
 import BudgetSlider from './BudgetSlider';
 
 const GiftBundleGenerator: React.FC = () => {
@@ -9,6 +12,7 @@ const GiftBundleGenerator: React.FC = () => {
   const [budget, setBudget] = useState(100);
   const [bundles, setBundles] = useState<GiftBundle[]>([]);
   const [loading, setLoading] = useState(false);
+  const { addToCart } = useCart();
 
   const fetchBundles = async (p: string) => {
     setLoading(true);
@@ -27,7 +31,20 @@ const GiftBundleGenerator: React.FC = () => {
   };
 
   const handleAddAll = (bundle: GiftBundle) => {
-    console.log('Add All to Cart', bundle);
+    bundle.items.forEach((item) => {
+      const prod: ProductWithQty = {
+        id: item.id!,
+        title: item.name,
+        price: item.price,
+        description: item.description,
+        category: 'bundle',
+        thumbnail: item.imageUrl,
+        images: [item.imageUrl],
+        quantity: 1,
+      };
+      addToCart(prod);
+    });
+    toast.success(`Added "${bundle.title}" bundle to cart!`);
   };
 
   // Re-fetch bundles when budget changes after initial search
@@ -91,12 +108,21 @@ const GiftBundleGenerator: React.FC = () => {
               ))}
             </ul>
             <p className="font-bold mb-2">Total: ${bundle.totalPrice.toFixed(2)}</p>
-            <button
-              onClick={() => handleAddAll(bundle)}
-              className="bg-accent-400 hover:bg-accent-500 text-gray-900 px-3 py-1 rounded-md"
-            >
-              Add All to Cart
-            </button>
+            <div className="flex gap-2">
+              <Link
+                to="/bundle"
+                state={{ bundle }}
+                className="bg-primary-500 hover:bg-primary-600 text-white px-3 py-1 rounded-md text-center flex-1"
+              >
+                Customize
+              </Link>
+              <button
+                onClick={() => handleAddAll(bundle)}
+                className="bg-accent-400 hover:bg-accent-500 text-gray-900 px-3 py-1 rounded-md flex-1"
+              >
+                Add All to Cart
+              </button>
+            </div>
           </div>
         ))}
       </div>
