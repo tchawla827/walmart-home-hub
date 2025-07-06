@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { GiftBundle, GiftSuggestions, mockGiftGenius } from '../mockGiftGenius';
 import { Product } from '../mockProducts';
 import { toast } from 'react-toastify';
+import { useCart, ProductWithQty } from '../context/CartContext';
 
 interface ChatEntry {
   prompt: string;
@@ -14,6 +15,7 @@ const GiftGenius: React.FC = () => {
   const [prompt, setPrompt] = useState('');
   const [history, setHistory] = useState<ChatEntry[]>([]);
   const [loading, setLoading] = useState(false);
+  const { addToCart } = useCart();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +39,19 @@ const GiftGenius: React.FC = () => {
   };
 
   const handleAddAll = (bundle: GiftBundle) => {
-    // Implement your cart logic here
+    bundle.items.forEach((item) => {
+      const prod: ProductWithQty = {
+        id: item.id,
+        title: item.title,
+        price: item.price,
+        description: item.description,
+        category: item.category,
+        thumbnail: item.image,
+        images: [item.image],
+        quantity: 1,
+      } as any;
+      addToCart(prod);
+    });
     toast.success(`Added "${bundle.title}" bundle to cart!`);
   };
 

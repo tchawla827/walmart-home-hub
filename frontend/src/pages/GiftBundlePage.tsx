@@ -5,10 +5,12 @@ import { toast } from 'react-toastify';
 import { mockProducts } from '../mockProducts';
 import BundleCustomizer from '../components/BundleCustomizer';
 import { GiftBundle, Product } from '../types';
+import { useCart, ProductWithQty } from '../context/CartContext';
 
 const GiftBundlePage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { addToCart } = useCart();
   const bundle = (location.state as { bundle?: GeneratedGiftBundle } | undefined)?.bundle;
 
   const convertBundle = (b: GeneratedGiftBundle): GiftBundle => ({
@@ -61,6 +63,19 @@ const GiftBundlePage: React.FC = () => {
   };
 
   const handleAddAllToCart = () => {
+    currentBundle.items.forEach((item) => {
+      const prod: ProductWithQty = {
+        id: item.id!,
+        title: item.name,
+        price: item.price,
+        description: item.description,
+        category: 'bundle',
+        thumbnail: item.imageUrl,
+        images: [item.imageUrl],
+        quantity: 1,
+      } as any;
+      addToCart(prod);
+    });
     toast.success(`Added "${currentBundle.title}" bundle to cart!`);
   };
   return (
