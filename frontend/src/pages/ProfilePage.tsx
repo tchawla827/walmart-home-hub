@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
+import { useAuth } from '../context/AuthContext';
 
 interface Profile {
   id: string;
@@ -18,15 +19,14 @@ const ProfilePage: React.FC = () => {
   const [autoOrder, setAutoOrder] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
+  const { session, user } = useAuth();
 
   useEffect(() => {
     const loadProfile = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+      if (!session || !user) {
         navigate('/login');
         return;
       }
-      const user = session.user;
       try {
         // Fetch user profile info
         const { data, error } = await supabase
@@ -61,7 +61,7 @@ const ProfilePage: React.FC = () => {
     };
 
     loadProfile();
-  }, [navigate]);
+  }, [navigate, session, user]);
 
   const toggleAutoOrder = async () => {
     if (!profile) return;
