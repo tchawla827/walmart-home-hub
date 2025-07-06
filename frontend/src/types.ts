@@ -20,6 +20,11 @@ export interface Review {
 
 export interface Product {
   id: number;
+  /**
+   * Some APIs return `title` while others may return `name`.
+   * Keep `name` optional for compatibility with locally stored products.
+   */
+  name?: string;
   title: string;
   description: string;
   price: number;
