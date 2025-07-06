@@ -1,4 +1,6 @@
 import React from 'react';
+import Slider, { Range } from 'rc-slider';
+import 'rc-slider/assets/index.css';
 
 interface Props {
   min: number;
@@ -10,14 +12,9 @@ interface Props {
 const BudgetRangeSlider: React.FC<Props> = ({ min, max, values, onChange }) => {
   const [minVal, maxVal] = values;
 
-  const handleMin = (val: number) => {
-    const newMin = Math.min(val, maxVal);
-    onChange([newMin, maxVal]);
-  };
-
-  const handleMax = (val: number) => {
-    const newMax = Math.max(val, minVal);
-    onChange([minVal, newMax]);
+  const handleChange = (vals: number[]) => {
+    const [newMin, newMax] = vals;
+    onChange([newMin, newMax]);
   };
 
   return (
@@ -25,26 +22,20 @@ const BudgetRangeSlider: React.FC<Props> = ({ min, max, values, onChange }) => {
       <label className="block mb-2 font-medium text-gray-900 dark:text-white">
         Budget: ${minVal} - ${maxVal}
       </label>
-      <div className="flex items-center space-x-2">
-        <input
-          type="range"
-          min={min}
-          max={max}
-          step={25}
-          value={minVal}
-          onChange={(e) => handleMin(Number(e.target.value))}
-          className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-primary-600"
-        />
-        <input
-          type="range"
-          min={min}
-          max={max}
-          step={25}
-          value={maxVal}
-          onChange={(e) => handleMax(Number(e.target.value))}
-          className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-primary-600"
-        />
-      </div>
+      <Range
+        min={min}
+        max={max}
+        step={25}
+        allowCross={false}
+        value={[minVal, maxVal]}
+        onChange={handleChange}
+        trackStyle={[{ backgroundColor: '#3b82f6' }]}
+        handleStyle={[
+          { borderColor: '#3b82f6' },
+          { borderColor: '#3b82f6' },
+        ]}
+        railStyle={{ backgroundColor: '#e5e7eb' }}
+      />
       <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400 mt-1">
         <span>${min}</span>
         <span>${max}</span>
