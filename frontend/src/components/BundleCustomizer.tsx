@@ -129,6 +129,7 @@ const BundleCustomizer: React.FC<Props> = ({ bundle, availableItems: initialAvai
                       className="border border-gray-200 dark:border-gray-700 rounded-lg p-2 flex flex-col bg-white dark:bg-gray-800"
                     >
                       <div className="flex-1">
+
                         <p className="text-xs font-medium line-clamp-2 text-gray-900 dark:text-white">
                           {prod.title}
                         </p>
