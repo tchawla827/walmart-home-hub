@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import api from '../api';
+import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
@@ -8,18 +8,18 @@ const LoginForm: React.FC = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { loginUser } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (loading) return;
     setLoading(true);
     try {
-      const res = await api.post('/api/login', { email, password });
-      localStorage.setItem('auth_token', res.data.token);
+      await loginUser(email, password);
       toast.success('Logged in');
       navigate('/dashboard');
     } catch (err: any) {
-      toast.error(err.response?.data?.error || 'Login failed');
+      toast.error(err.message || 'Login failed');
     } finally {
       setLoading(false);
     }

@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { isAuthenticated, logoutUser } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <nav className="bg-primary-600 text-white shadow-lg">
@@ -37,12 +40,24 @@ const Navbar: React.FC = () => {
               >
                 Cart
               </Link>
-              <Link
-                to="/login"
-                className="px-3 py-2 rounded-md text-sm font-medium hover:bg-primary-500 hover:text-accent-300 transition-all"
-              >
-                Login
-              </Link>
+              {isAuthenticated ? (
+                <button
+                  onClick={async () => {
+                    await logoutUser();
+                    navigate('/login');
+                  }}
+                  className="px-3 py-2 rounded-md text-sm font-medium hover:bg-primary-500 hover:text-accent-300 transition-all"
+                >
+                  Logout
+                </button>
+              ) : (
+                <Link
+                  to="/login"
+                  className="px-3 py-2 rounded-md text-sm font-medium hover:bg-primary-500 hover:text-accent-300 transition-all"
+                >
+                  Login
+                </Link>
+              )}
               <Link
                 to="/profile"
                 className="px-3 py-2 rounded-md text-sm font-medium hover:bg-primary-500 hover:text-accent-300 transition-all"
@@ -98,13 +113,26 @@ const Navbar: React.FC = () => {
           >
             Cart
           </Link>
-          <Link
-            to="/login"
-            className="block px-3 py-2 rounded-md text-base font-medium hover:bg-primary-500 hover:text-accent-300 transition-all"
-            onClick={() => setIsOpen(false)}
-          >
-            Login
-          </Link>
+          {isAuthenticated ? (
+            <button
+              onClick={async () => {
+                setIsOpen(false);
+                await logoutUser();
+                navigate('/login');
+              }}
+              className="block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-primary-500 hover:text-accent-300 transition-all"
+            >
+              Logout
+            </button>
+          ) : (
+            <Link
+              to="/login"
+              className="block px-3 py-2 rounded-md text-base font-medium hover:bg-primary-500 hover:text-accent-300 transition-all"
+              onClick={() => setIsOpen(false)}
+            >
+              Login
+            </Link>
+          )}
           <Link
             to="/profile"
             className="block px-3 py-2 rounded-md text-base font-medium hover:bg-primary-500 hover:text-accent-300 transition-all"

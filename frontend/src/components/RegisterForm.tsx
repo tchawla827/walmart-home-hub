@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import api from '../api';
+import { supabase } from '../supabaseClient';
 import { toast } from 'react-toastify';
 
 const RegisterForm: React.FC = () => {
@@ -12,10 +12,11 @@ const RegisterForm: React.FC = () => {
     if (loading) return;
     setLoading(true);
     try {
-      await api.post('/api/register', { email, password });
+      const { error } = await supabase.auth.signUp({ email, password });
+      if (error) throw error;
       toast.success('Account created');
     } catch (err: any) {
-      toast.error(err.response?.data?.error || 'Registration failed');
+      toast.error(err.message || 'Registration failed');
     } finally {
       setLoading(false);
     }
