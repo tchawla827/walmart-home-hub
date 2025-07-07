@@ -148,18 +148,32 @@ def generate_curated_bundles(prompt: str, budget_range: Optional[Dict[str, float
         if min_budget is not None and total < min_budget:
             continue
 
-        bundles.append({"title": bundle["title"], "items": items, "totalPrice": round(total, 2)})
+        discount_percent = random.randint(5, 20)
+        discounted_total = round(total * (1 - discount_percent / 100), 2)
+        bundles.append(
+            {
+                "title": bundle["title"],
+                "items": items,
+                "totalPrice": discounted_total,
+                "discountPercent": discount_percent,
+            }
+        )
 
     if not bundles:
         # If nothing met the budget criteria, return all bundles unfiltered
-        bundles = [
-            {
-                "title": b["title"],
-                "items": b["items"],
-                "totalPrice": round(sum(i["price"] for i in b["items"]), 2),
-            }
-            for b in base
-        ]
+        bundles = []
+        for b in base:
+            subtotal = sum(i["price"] for i in b["items"])
+            discount_percent = random.randint(5, 20)
+            discounted_total = round(subtotal * (1 - discount_percent / 100), 2)
+            bundles.append(
+                {
+                    "title": b["title"],
+                    "items": b["items"],
+                    "totalPrice": discounted_total,
+                    "discountPercent": discount_percent,
+                }
+            )
 
     return bundles
 

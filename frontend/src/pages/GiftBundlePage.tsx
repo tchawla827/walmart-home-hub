@@ -1,33 +1,36 @@
-import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import type { GiftBundle as GeneratedGiftBundle } from '../mockGiftGenius';
-import { toast } from 'react-toastify';
-import { mockProducts } from '../mockProducts';
-import BundleCustomizer from '../components/BundleCustomizer';
-import { GiftBundle, Product } from '../types';
-import { useCart, ProductWithQty } from '../context/CartContext';
+import React, { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import type { GiftBundle as GeneratedGiftBundle } from "../mockGiftGenius";
+import { toast } from "react-toastify";
+import { mockProducts } from "../mockProducts";
+import BundleCustomizer from "../components/BundleCustomizer";
+import { GiftBundle, Product } from "../types";
+import { useCart, ProductWithQty } from "../context/CartContext";
 
 const GiftBundlePage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { addToCart } = useCart();
-  const bundle = (location.state as { bundle?: GeneratedGiftBundle } | undefined)?.bundle;
+  const bundle = (
+    location.state as { bundle?: GeneratedGiftBundle } | undefined
+  )?.bundle;
 
   const convertBundle = (b: GeneratedGiftBundle): GiftBundle => ({
     title: b.title,
     items: b.items.map((item) => ({
       id: item.id,
-      name: (item as any).title ?? (item as any).name ?? '',
+      name: (item as any).title ?? (item as any).name ?? "",
       price: item.price,
       imageUrl: (item as any).image ?? (item as any).thumbnail,
       description: item.description,
     })),
     totalPrice: b.totalPrice,
+    discountPercent: (b as any).discountPercent,
   });
 
   // 👇 Moved outside the conditional
   const [currentBundle, setCurrentBundle] = useState<GiftBundle | null>(
-    bundle ? convertBundle(bundle) : null
+    bundle ? convertBundle(bundle) : null,
   );
 
   const availableItems: Product[] = mockProducts.map((p) => ({
@@ -53,7 +56,7 @@ const GiftBundlePage: React.FC = () => {
         title: item.name,
         price: item.price,
         description: item.description,
-        category: 'bundle',
+        category: "bundle",
         thumbnail: item.imageUrl,
         images: [item.imageUrl],
         quantity: 1,
@@ -75,7 +78,7 @@ const GiftBundlePage: React.FC = () => {
             Please select a gift bundle to view details
           </p>
           <button
-            onClick={() => navigate('/gift')}
+            onClick={() => navigate("/gift")}
             className="bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-md font-medium transition-all hover:scale-[1.02]"
           >
             Browse Gift Bundles
@@ -91,8 +94,18 @@ const GiftBundlePage: React.FC = () => {
         onClick={() => navigate(-1)}
         className="flex items-center text-primary-500 hover:text-primary-600 mb-6 transition-colors"
       >
-        <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        <svg
+          className="w-5 h-5 mr-1"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M10 19l-7-7m0 0l7-7m-7 7h18"
+          />
         </svg>
         Back to Bundles
       </button>
@@ -115,6 +128,5 @@ const GiftBundlePage: React.FC = () => {
     </div>
   );
 };
-
 
 export default GiftBundlePage;

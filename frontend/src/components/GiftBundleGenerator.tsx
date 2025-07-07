@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import api from '../api';
-import { GiftBundle } from '../types';
-import { useCart, ProductWithQty } from '../context/CartContext';
-import { toast } from 'react-toastify';
-import BudgetSlider from './BudgetSlider';
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import api from "../api";
+import { GiftBundle } from "../types";
+import { useCart, ProductWithQty } from "../context/CartContext";
+import { toast } from "react-toastify";
+import BudgetSlider from "./BudgetSlider";
 
 const GiftBundleGenerator: React.FC = () => {
-  const [prompt, setPrompt] = useState('');
-  const [lastPrompt, setLastPrompt] = useState('');
+  const [prompt, setPrompt] = useState("");
+  const [lastPrompt, setLastPrompt] = useState("");
   const [budget, setBudget] = useState(100);
   const [bundles, setBundles] = useState<GiftBundle[]>([]);
   const [loading, setLoading] = useState(false);
@@ -17,14 +17,25 @@ const GiftBundleGenerator: React.FC = () => {
   const fetchBundles = async (p: string) => {
     setLoading(true);
     try {
-      console.log('Fetching gift bundles for prompt:', p, 'budget', budget);
-      const res = await api.post<{ bundles: GiftBundle[] }>('/api/gift-bundles', {
-        prompt: p,
-        budget,
+      console.log("Fetching gift bundles for prompt:", p, "budget", budget);
+      const res = await api.post<{ bundles: GiftBundle[] }>(
+        "/api/gift-bundles",
+        {
+          prompt: p,
+          budget,
+        },
+      );
+      const bundlesWithDiscount = res.data.bundles.map((b) => {
+        const subtotal = b.items.reduce((sum, item) => sum + item.price, 0);
+        const discountPercent = 5 + Math.floor(Math.random() * 16); // 5-20%
+        const totalPrice = parseFloat(
+          (subtotal * (1 - discountPercent / 100)).toFixed(2),
+        );
+        return { ...b, totalPrice, discountPercent };
       });
-      setBundles(res.data.bundles);
+      setBundles(bundlesWithDiscount);
     } catch (err) {
-      console.error('Failed to fetch bundles', err);
+      console.error("Failed to fetch bundles", err);
     } finally {
       setLoading(false);
     }
@@ -37,7 +48,7 @@ const GiftBundleGenerator: React.FC = () => {
         title: item.name,
         price: item.price,
         description: item.description,
-        category: 'bundle',
+        category: "bundle",
         thumbnail: item.imageUrl,
         images: [item.imageUrl],
         quantity: 1,
@@ -86,7 +97,7 @@ const GiftBundleGenerator: React.FC = () => {
           disabled={loading}
           className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-md font-medium transition-all disabled:opacity-50"
         >
-          {loading ? 'Generating...' : 'Find Gifts'}
+          {loading ? "Generating..." : "Find Gifts"}
         </button>
       </form>
 
@@ -107,7 +118,17 @@ const GiftBundleGenerator: React.FC = () => {
                 </li>
               ))}
             </ul>
-            <p className="font-bold mb-2">Total: ${bundle.totalPrice.toFixed(2)}</p>
+            <p className="font-bold mb-2">
+              Total: ${bundle.totalPrice.toFixed(2)}
+            </p>
+            <p className="text-sm text-green-600 dark:text-green-400 mb-2">
+              {`Save ${bundle.discountPercent}% (`}
+              {`$${(
+                bundle.items.reduce((sum, item) => sum + item.price, 0) -
+                bundle.totalPrice
+              ).toFixed(2)}`}
+              {")"}
+            </p>
             <div className="flex gap-2">
               <Link
                 to="/bundle"
