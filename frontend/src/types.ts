@@ -46,6 +46,10 @@ export interface Product {
   thumbnail: string;
   images: string[];
   reviews?: Review[];
+  /** If this product represents a gift bundle, the bundled items */
+  bundleItems?: GiftItem[];
+  /** Flag to easily identify bundle entries in the cart */
+  isBundle?: boolean;
 }
 
 export interface GiftItem {
