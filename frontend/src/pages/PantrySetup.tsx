@@ -114,7 +114,7 @@ const PantrySetup: React.FC = () => {
       } catch (err) {
         console.error('Search failed, falling back to mock', err);
         const filtered = mockProducts.filter((p) =>
-          p.title.toLowerCase().includes(search.toLowerCase())
+          p.title.toLowerCase().startsWith(search.toLowerCase())
         );
         setResults(filtered as unknown as Product[]);
       }
