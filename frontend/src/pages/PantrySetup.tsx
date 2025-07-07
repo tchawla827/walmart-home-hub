@@ -10,11 +10,14 @@ export interface PantryItem {
   category: string;
   quantity: number;
   unit: 'grams' | 'liters' | 'count';
-  dailyRate: number;
+  /** amount consumed per selected frequency */
+  rate: number;
+  frequency: 'daily' | 'weekly' | 'monthly';
 }
 
 const UNITS: PantryItem['unit'][] = ['grams', 'liters', 'count'];
 const CATEGORIES = ['Dairy', 'Grains', 'Produce', 'Meat', 'Other'];
+const FREQUENCIES: PantryItem['frequency'][] = ['daily', 'weekly', 'monthly'];
 
 const generateId = () =>
   Math.random().toString(36).substring(2) + Date.now().toString(36);
@@ -26,10 +29,12 @@ const PantrySetup: React.FC = () => {
   const [category, setCategory] = useState('Dairy');
   const [quantity, setQuantity] = useState<number>(0);
   const [unit, setUnit] = useState<PantryItem['unit']>('count');
-  const [dailyRate, setDailyRate] = useState<number>(0);
+  const [rate, setRate] = useState<number>(0);
+  const [frequency, setFrequency] = useState<PantryItem['frequency']>('daily');
   const [search, setSearch] = useState('');
   const [results, setResults] = useState<Product[]>([]);
   const [showResults, setShowResults] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   const resetForm = () => {
@@ -37,11 +42,13 @@ const PantrySetup: React.FC = () => {
     setCategory('Dairy');
     setQuantity(0);
     setUnit('count');
-    setDailyRate(0);
+    setRate(0);
+    setFrequency('daily');
     setEditingId(null);
+    setSelectedProduct(null);
   };
 
-  const validateForm = () => name.trim() && category && quantity > 0 && dailyRate > 0;
+  const validateForm = () => name.trim() && category && quantity > 0 && rate > 0;
 
   const handleAddItem = (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,14 +61,14 @@ const PantrySetup: React.FC = () => {
       setItems((prev) =>
         prev.map((it) =>
           it.id === editingId
-            ? { ...it, name, category, quantity, unit, dailyRate }
+            ? { ...it, name, category, quantity, unit, rate, frequency }
             : it
         )
       );
-      console.log('Form payload (edit)', { id: editingId, name, category, quantity, unit, dailyRate });
+      console.log('Form payload (edit)', { id: editingId, name, category, quantity, unit, rate, frequency });
       toast.success('Item updated');
     } else {
-      const newItem: PantryItem = { id: generateId(), name, category, quantity, unit, dailyRate };
+      const newItem: PantryItem = { id: generateId(), name, category, quantity, unit, rate, frequency };
       console.log('Form payload (add)', newItem);
       setItems((prev) => [...prev, newItem]);
       toast.success('Item added');
@@ -75,7 +82,17 @@ const PantrySetup: React.FC = () => {
     setCategory(item.category);
     setQuantity(item.quantity);
     setUnit(item.unit);
-    setDailyRate(item.dailyRate);
+    setRate(item.rate);
+    setFrequency(item.frequency);
+    setSelectedProduct({
+      id: 0,
+      title: item.name,
+      category: item.category,
+      thumbnail: '',
+      description: '',
+      price: 0,
+      images: [],
+    });
     setEditingId(id);
   };
 
@@ -125,6 +142,10 @@ const PantrySetup: React.FC = () => {
   const handleSelectProduct = (product: Product) => {
     setName(product.title || product.name || '');
     setCategory(product.category);
+    setSelectedProduct(product);
+    setQuantity(1);
+    setRate(1);
+    setFrequency('daily');
     setShowResults(false);
     setResults([]);
     setSearch('');
@@ -162,55 +183,97 @@ const PantrySetup: React.FC = () => {
             </ul>
           )}
         </div>
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Item name"
-          className="border border-gray-300 dark:border-gray-600 rounded p-2"
-        />
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className="border border-gray-300 dark:border-gray-600 rounded p-2"
-        >
-          {CATEGORIES.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
-        <input
-          type="number"
-          value={quantity || ''}
-          onChange={(e) => setQuantity(parseFloat(e.target.value) || 0)}
-          placeholder="Qty"
-          className="border border-gray-300 dark:border-gray-600 rounded p-2"
-        />
-        <select
-          value={unit}
-          onChange={(e) => setUnit(e.target.value as PantryItem['unit'])}
-          className="border border-gray-300 dark:border-gray-600 rounded p-2"
-        >
-          {UNITS.map((u) => (
-            <option key={u} value={u}>
-              {u}
-            </option>
-          ))}
-        </select>
-        <input
-          type="number"
-          value={dailyRate || ''}
-          onChange={(e) => setDailyRate(parseFloat(e.target.value) || 0)}
-          placeholder="Daily rate"
-          className="border border-gray-300 dark:border-gray-600 rounded p-2"
-        />
-        <button
-          type="submit"
-          className="bg-accent-400 hover:bg-accent-500 text-gray-900 font-medium rounded p-2 transition-all"
-        >
-          {editingId ? 'Update' : 'Add'}
-        </button>
+        {selectedProduct ? (
+          <div className="md:col-span-5 flex items-center gap-4 border border-gray-300 dark:border-gray-600 rounded p-3 bg-gray-50 dark:bg-gray-700">
+            {selectedProduct.thumbnail && (
+              <img
+                src={selectedProduct.thumbnail}
+                alt={selectedProduct.title}
+                className="w-16 h-16 object-cover"
+              />
+            )}
+            <div className="flex-grow">
+              <p className="font-medium text-gray-900 dark:text-white">
+                {selectedProduct.title}
+              </p>
+              <p className="text-sm text-gray-500">{selectedProduct.category}</p>
+            </div>
+            <div className="flex flex-col items-center">
+              <span className="text-xs text-gray-500">Qty</span>
+              <div className="flex items-center">
+                <button
+                  type="button"
+                  onClick={() => setQuantity((q) => Math.max(q - 1, 0))}
+                  className="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-l"
+                >
+                  -
+                </button>
+                <span className="px-2 w-8 text-center bg-white dark:bg-gray-800 border-t border-b border-gray-300 dark:border-gray-600">
+                  {quantity}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setQuantity((q) => q + 1)}
+                  className="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-r"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <div className="flex flex-col items-center ml-2">
+              <span className="text-xs text-gray-500">Rate</span>
+              <div className="flex items-center">
+                <button
+                  type="button"
+                  onClick={() => setRate((r) => Math.max(r - 1, 0))}
+                  className="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-l"
+                >
+                  -
+                </button>
+                <span className="px-2 w-8 text-center bg-white dark:bg-gray-800 border-t border-b border-gray-300 dark:border-gray-600">
+                  {rate}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setRate((r) => r + 1)}
+                  className="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-r"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <select
+              value={frequency}
+              onChange={(e) => setFrequency(e.target.value as PantryItem['frequency'])}
+              className="border border-gray-300 dark:border-gray-600 rounded p-1 ml-2"
+            >
+              {FREQUENCIES.map((f) => (
+                <option key={f} value={f}>
+                  {f}
+                </option>
+              ))}
+            </select>
+            <select
+              value={unit}
+              onChange={(e) => setUnit(e.target.value as PantryItem['unit'])}
+              className="border border-gray-300 dark:border-gray-600 rounded p-1 ml-2"
+            >
+              {UNITS.map((u) => (
+                <option key={u} value={u}>
+                  {u}
+                </option>
+              ))}
+            </select>
+            <button
+              type="submit"
+              className="ml-4 bg-accent-400 hover:bg-accent-500 text-gray-900 font-medium rounded p-2 transition-all"
+            >
+              Add
+            </button>
+          </div>
+        ) : (
+          <p className="md:col-span-5 text-gray-500">Select a product to add.</p>
+        )}
       </form>
       {items.length > 0 && (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
@@ -220,7 +283,7 @@ const PantrySetup: React.FC = () => {
                 <div>
                   <p className="font-medium text-gray-900 dark:text-white">{item.name}</p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {item.quantity} {item.unit} - {item.dailyRate}/day ({item.category})
+                    {item.quantity} {item.unit} - {item.rate}/{item.frequency} ({item.category})
                   </p>
                 </div>
                 <div className="space-x-2">
