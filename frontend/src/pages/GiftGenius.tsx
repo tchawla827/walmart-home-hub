@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { GiftBundle, GiftSuggestions, mockGiftGenius } from '../mockGiftGenius';
-import { Product } from '../mockProducts';
-import { toast } from 'react-toastify';
-import { useCart, ProductWithQty } from '../context/CartContext';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { GiftBundle, GiftSuggestions, mockGiftGenius } from "../mockGiftGenius";
+import { Product } from "../mockProducts";
+import { toast } from "react-toastify";
+import { useCart, ProductWithQty } from "../context/CartContext";
 
 interface ChatEntry {
   prompt: string;
@@ -12,7 +12,7 @@ interface ChatEntry {
 }
 
 const GiftGenius: React.FC = () => {
-  const [prompt, setPrompt] = useState('');
+  const [prompt, setPrompt] = useState("");
   const [history, setHistory] = useState<ChatEntry[]>([]);
   const [loading, setLoading] = useState(false);
   const { addToCart } = useCart();
@@ -20,19 +20,22 @@ const GiftGenius: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!prompt.trim() || loading) return;
-    
+
     setLoading(true);
     try {
       const result: GiftSuggestions = await mockGiftGenius(prompt);
-      setHistory((prev) => [...prev, { 
-        prompt, 
-        bundles: result.bundles, 
-        items: result.items 
-      }]);
-      setPrompt('');
-      toast.success('Found some great gift ideas!');
+      setHistory((prev) => [
+        ...prev,
+        {
+          prompt,
+          bundles: result.bundles,
+          items: result.items,
+        },
+      ]);
+      setPrompt("");
+      toast.success("Found some great gift ideas!");
     } catch (error) {
-      toast.error('Could not fetch gift suggestions');
+      toast.error("Could not fetch gift suggestions");
     } finally {
       setLoading(false);
     }
@@ -74,7 +77,8 @@ const GiftGenius: React.FC = () => {
               No searches yet
             </h2>
             <p className="text-gray-600 dark:text-gray-300">
-              Try searching for something like "gifts for dad under $50" or "birthday present for sister"
+              Try searching for something like "gifts for dad under $50" or
+              "birthday present for sister"
             </p>
           </div>
         )}
@@ -93,9 +97,9 @@ const GiftGenius: React.FC = () => {
                   className="flex items-center gap-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm hover:shadow-md transition-all border border-gray-100 dark:border-gray-700"
                 >
                   <div className="w-16 h-16 bg-white p-1 rounded border border-gray-200">
-                    <img 
-                      src={item.image} 
-                      alt={item.title} 
+                    <img
+                      src={item.image}
+                      alt={item.title}
                       className="w-full h-full object-contain"
                     />
                   </div>
@@ -114,7 +118,7 @@ const GiftGenius: React.FC = () => {
               ))}
 
               {entry.bundles.map((bundle) => (
-                <div 
+                <div
                   key={bundle.title}
                   className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-all overflow-hidden border border-gray-100 dark:border-gray-700"
                 >
@@ -122,21 +126,20 @@ const GiftGenius: React.FC = () => {
                     <h3 className="font-semibold text-lg text-primary-600 dark:text-primary-400">
                       {bundle.title}
                     </h3>
-                    
                   </div>
-                  
+
                   <div className="p-4">
                     <ul className="space-y-3 mb-4">
                       {bundle.items.map((item) => (
                         <li key={item.id} className="flex items-center gap-3">
                           <div className="w-10 h-10 bg-white p-1 rounded border border-gray-200">
-                            <img 
-                              src={item.image} 
-                              alt={item.title} 
+                            <img
+                              src={item.image}
+                              alt={item.title}
                               className="w-full h-full object-contain"
                             />
                           </div>
-                          <Link 
+                          <Link
                             to={`/product/${item.id}`}
                             className="flex-1 text-sm hover:text-primary-500 transition-colors"
                           >
@@ -155,7 +158,14 @@ const GiftGenius: React.FC = () => {
                           Bundle Total: ${bundle.totalPrice.toFixed(2)}
                         </p>
                         <p className="text-sm text-green-600 dark:text-green-400">
-                          Save ${(bundle.items.reduce((sum, item) => sum + item.price, 0) - bundle.totalPrice).toFixed(2)}
+                          {`Save ${bundle.discountPercent}% (`}
+                          {`$${(
+                            bundle.items.reduce(
+                              (sum, item) => sum + item.price,
+                              0,
+                            ) - bundle.totalPrice
+                          ).toFixed(2)}`}
+                          {")"}
                         </p>
                       </div>
                       <div className="flex gap-2 w-full sm:w-auto">
@@ -188,13 +198,18 @@ const GiftGenius: React.FC = () => {
           <div className="flex justify-center items-center p-8">
             <div className="animate-pulse flex flex-col items-center">
               <div className="w-16 h-16 bg-primary-100 dark:bg-gray-700 rounded-full mb-4"></div>
-              <p className="text-gray-600 dark:text-gray-300">Finding perfect gifts...</p>
+              <p className="text-gray-600 dark:text-gray-300">
+                Finding perfect gifts...
+              </p>
             </div>
           </div>
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="sticky bottom-0 bg-white dark:bg-gray-900 pt-4 pb-2">
+      <form
+        onSubmit={handleSubmit}
+        className="sticky bottom-0 bg-white dark:bg-gray-900 pt-4 pb-2"
+      >
         <div className="relative">
           <textarea
             className="w-full border border-gray-300 dark:border-gray-600 p-3 pr-16 rounded-lg resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
@@ -211,13 +226,31 @@ const GiftGenius: React.FC = () => {
           >
             {loading ? (
               <span className="flex items-center">
-                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
                 Searching...
               </span>
-            ) : 'Search'}
+            ) : (
+              "Search"
+            )}
           </button>
         </div>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 text-center">

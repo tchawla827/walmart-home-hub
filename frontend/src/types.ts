@@ -60,4 +60,6 @@ export interface GiftBundle {
   title: string;
   items: GiftItem[];
   totalPrice: number;
+  /** Percentage discount applied to the bundle price */
+  discountPercent?: number;
 }
