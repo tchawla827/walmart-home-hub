@@ -1,9 +1,12 @@
 import React, { createContext, useContext, useState } from 'react';
-import { Product } from '../types';
+import { Product, GiftItem } from '../types';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-export type ProductWithQty = Product & { quantity: number };
+export type ProductWithQty = Product & {
+  quantity: number;
+  bundleItems?: GiftItem[];
+};
 
 interface CartContextProps {
   cartItems: ProductWithQty[];

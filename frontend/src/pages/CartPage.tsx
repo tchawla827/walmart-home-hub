@@ -103,8 +103,14 @@ const CartPage: React.FC = () => {
               key={item.id}
               className="flex flex-col sm:flex-row items-center border border-gray-200 dark:border-gray-700 p-4 rounded-lg bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all"
             >
-              <Link 
-                to={`/products/${item.id}`}
+              <Link
+                to={item.isBundle ? "/bundle" : `/products/${item.id}`}
+                state={item.isBundle ? { bundle: {
+                  title: item.title,
+                  items: item.bundleItems,
+                  totalPrice: item.price,
+                  discountPercent: item.discountPercentage,
+                } } : undefined}
                 className="w-24 h-24 flex-shrink-0 mb-4 sm:mb-0 sm:mr-6"
               >
                 <img
@@ -115,8 +121,14 @@ const CartPage: React.FC = () => {
               </Link>
               
               <div className="flex-1 w-full sm:w-auto text-center sm:text-left mb-4 sm:mb-0">
-                <Link 
-                  to={`/products/${item.id}`}
+                <Link
+                  to={item.isBundle ? "/bundle" : `/products/${item.id}`}
+                  state={item.isBundle ? { bundle: {
+                    title: item.title,
+                    items: item.bundleItems,
+                    totalPrice: item.price,
+                    discountPercent: item.discountPercentage,
+                  } } : undefined}
                   className="font-semibold text-gray-900 dark:text-white hover:text-primary-500 dark:hover:text-primary-400 transition-colors"
                 >
                   {item.title}
@@ -143,6 +155,30 @@ const CartPage: React.FC = () => {
                     </>
                   );
                 })()}
+                {item.bundleItems && (
+                  <ul className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                    {item.bundleItems.map((bi) => (
+                      <li key={bi.name} className="flex justify-between">
+                        <span>{bi.name}</span>
+                        <span>${bi.price.toFixed(2)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {item.isBundle && (
+                  <Link
+                    to="/bundle"
+                    state={{ bundle: {
+                      title: item.title,
+                      items: item.bundleItems,
+                      totalPrice: item.price,
+                      discountPercent: item.discountPercentage,
+                    }}}
+                    className="text-sm text-primary-600 dark:text-primary-400 underline mt-2 inline-block"
+                  >
+                    Customize Bundle
+                  </Link>
+                )}
               </div>
               
               <div className="flex items-center gap-4">

@@ -42,19 +42,30 @@ const GiftGenius: React.FC = () => {
   };
 
   const handleAddAll = (bundle: GiftBundle) => {
-    bundle.items.forEach((item) => {
-      const prod: ProductWithQty = {
-        id: item.id,
-        title: item.title,
-        price: item.price,
-        description: item.description,
-        category: item.category,
-        thumbnail: item.image,
-        images: [item.image],
-        quantity: 1,
-      } as any;
-      addToCart(prod);
-    });
+    const subtotal = bundle.items.reduce((sum, i) => sum + i.price, 0);
+    const discountPercent = bundle.discountPercent ??
+      Math.round((1 - bundle.totalPrice / subtotal) * 100);
+
+    const prod: ProductWithQty = {
+      id: Date.now(),
+      title: bundle.title,
+      description: `Bundle of ${bundle.items.length} items`,
+      price: bundle.totalPrice,
+      discountPercentage: discountPercent,
+      category: "bundle",
+      thumbnail: bundle.items[0]?.image ?? "",
+      images: bundle.items.map((i) => i.image),
+      quantity: 1,
+      bundleItems: bundle.items.map((i) => ({
+        id: i.id,
+        name: i.title,
+        price: i.price,
+        imageUrl: i.image,
+        description: i.description,
+      })),
+      isBundle: true,
+    } as any;
+    addToCart(prod);
     toast.success(`Added "${bundle.title}" bundle to cart!`);
   };
 
