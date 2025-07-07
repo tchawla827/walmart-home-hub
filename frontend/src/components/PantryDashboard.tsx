@@ -86,74 +86,94 @@ const PantryDashboard: React.FC = () => {
         ? toast.info
         : toast.warning;
     toastFn(messageMap[status]);
-    console.log(messageMap[status]);
   };
 
   const getBadgeColor = (days: number) => {
-    if (days <= 0) return 'bg-red-600';
-    if (days < 5) return 'bg-yellow-500';
-    return 'bg-green-600';
+    if (days <= 0) return 'bg-red-600 text-white';
+    if (days < 5) return 'bg-accent-400 text-gray-900';
+    return 'bg-green-600 text-white';
   };
 
   return (
-    <div className="space-y-4">
-      {items.map((item) => {
-        const days = getDaysRemaining(item);
-        return (
-          <div
-            key={item.id}
-            className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-800 shadow flex flex-col md:flex-row md:items-center md:justify-between"
-          >
-            <div className="flex-1">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                {item.name} ({item.unit})
-              </h3>
-              <p className="text-sm text-gray-500 mb-1">
-                Quantity: {item.quantity} {item.unit}
-              </p>
-              <span
-                className={`inline-block px-2 py-1 text-xs font-medium text-white rounded ${getBadgeColor(days)}`}
-              >
-                {days > 0 ? `${days}d remaining` : '0d remaining'}
-              </span>
-              {days <= item.reorderBufferDays && (
-                <p className="mt-2 text-sm text-red-600 dark:text-red-400 font-medium">
-                  Reorder Soon
-                </p>
-              )}
-            </div>
-            {days <= item.reorderBufferDays && !handled[item.id] ? (
-              <div className="mt-4 md:mt-0 flex gap-2">
-                <button
-                  onClick={() => handleAction(item, 'confirmed')}
-                  className="bg-green-500 hover:bg-green-600 text-white font-medium rounded px-3 py-1 text-sm"
-                >
-                  Confirm
-                </button>
-                <button
-                  onClick={() => handleAction(item, 'skipped')}
-                  className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium rounded px-3 py-1 text-sm"
-                >
-                  Skip
-                </button>
-                <button
-                  onClick={() => handleAction(item, 'delayed')}
-                  className="bg-yellow-500 hover:bg-yellow-600 text-white font-medium rounded px-3 py-1 text-sm"
-                >
-                  Delay
-                </button>
+    <div className="container mx-auto px-4 py-6">
+      <h1 className="text-2xl font-bold text-primary-700 dark:text-primary-400 mb-6">
+        Pantry Inventory
+      </h1>
+      
+      <div className="space-y-4">
+        {items.map((item) => {
+          const days = getDaysRemaining(item);
+          const needsReorder = days <= item.reorderBufferDays;
+          
+          return (
+            <div
+              key={item.id}
+              className={`border rounded-lg p-4 shadow-sm transition-all ${
+                needsReorder 
+                  ? 'border-accent-400 bg-accent-50 dark:bg-gray-800'
+                  : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
+              }`}
+            >
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3">
+                    <h3 className="text-lg font-semibold text-primary-800 dark:text-primary-200">
+                      {item.name}
+                    </h3>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      {item.quantity} {item.unit}
+                    </span>
+                  </div>
+                  
+                  <div className="mt-2 flex items-center gap-3">
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getBadgeColor(days)}`}
+                    >
+                      {days > 0 ? `${days}d remaining` : 'Out of stock'}
+                    </span>
+                    
+                    {needsReorder && (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200">
+                        Reorder Soon
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {needsReorder && !handled[item.id] ? (
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => handleAction(item, 'confirmed')}
+                      className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
+                    >
+                      Confirm Reorder
+                    </button>
+                    <button
+                      onClick={() => handleAction(item, 'skipped')}
+                      className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 transition-colors"
+                    >
+                      Skip
+                    </button>
+                    <button
+                      onClick={() => handleAction(item, 'delayed')}
+                      className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-gray-900 bg-accent-400 hover:bg-accent-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-500 transition-colors"
+                    >
+                      Remind Later
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => handleAction(item, 'confirmed')}
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
+                  >
+                    Reorder Now
+                  </button>
+                )}
               </div>
-            ) : (
-              <button
-                onClick={() => handleAction(item, 'confirmed')}
-                className="mt-4 md:mt-0 bg-accent-400 hover:bg-accent-500 text-gray-900 font-medium rounded px-4 py-2 transition-all"
-              >
-                Reorder
-              </button>
-            )}
-          </div>
-        );
-      })}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };
