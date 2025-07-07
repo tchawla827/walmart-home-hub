@@ -14,21 +14,24 @@ interface Props {
 const StreakTracker: React.FC<Props> = ({ pantryItems }) => {
   const streakDays = useMemo(() => {
     let latest: Date | null = null;
-    pantryItems.forEach((item) => {
+
+    for (const item of pantryItems) {
       if (item.quantity <= 0 && !item.lastDepletedDate) {
         latest = new Date();
-        return;
+        break;
       }
+
       if (item.lastDepletedDate) {
         const date = new Date(item.lastDepletedDate);
         if (!latest || date > latest) {
           latest = date;
         }
       }
-    });
+    }
 
     if (!latest) return 0;
-    const diff = Date.now() - latest.getTime();
+
+    const diff = Date.now() - (latest as Date).getTime(); // <--- Type assertion added here
     return Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)));
   }, [pantryItems]);
 
