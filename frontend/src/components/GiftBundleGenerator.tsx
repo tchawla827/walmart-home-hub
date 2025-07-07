@@ -62,7 +62,6 @@ const GiftBundleGenerator: React.FC = () => {
       isBundle: true,
     } as any;
     addToCart(prod);
-    toast.success(`Added "${bundle.title}" bundle to cart!`);
   };
 
   // Re-fetch bundles when budget changes after initial search
