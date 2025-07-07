@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
+
 import { PantryItem as StreakPantryItem } from '../components/StreakTracker';
+
 
 interface Profile {
   id: string;
@@ -72,6 +74,7 @@ const ProfilePage: React.FC = () => {
     setAutoOrder(true);
     setLoading(false);
   }, []);
+
 
   const toggleAutoOrder = () => {
     if (!profile) return;
