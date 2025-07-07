@@ -54,7 +54,7 @@ const ProductSearch: React.FC = () => {
   };
 
   const filtered = products.filter((p) => {
-    const matchesQuery = query ? p.title.toLowerCase().includes(query) : true;
+    const matchesQuery = query ? p.title.toLowerCase().startsWith(query) : true;
     const matchesCategory = category ? p.category.toLowerCase() === category : true;
     return matchesQuery && matchesCategory;
   });
