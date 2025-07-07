@@ -3,6 +3,7 @@ import { toast } from 'react-toastify';
 import api from '../api';
 import { Product } from '../types';
 import { mockProducts } from '../mockProducts';
+import PantryItemCard from '../components/PantryItemCard';
 
 export interface PantryItem {
   id: string;
@@ -257,26 +258,16 @@ const PantrySetup: React.FC = () => {
       </form>
       {items.length > 0 && (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-          <ul className="max-h-64 overflow-y-auto divide-y divide-gray-200 dark:divide-gray-700">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-64 overflow-y-auto">
             {items.map((item) => (
-              <li key={item.id} className="py-2 flex justify-between items-center">
-                <div>
-                  <p className="font-medium text-gray-900 dark:text-white">{item.name}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {item.rate} every {item.days}d - reorder at {item.reorderBuffer}% ({item.category})
-                  </p>
-                </div>
-                <div className="space-x-2">
-                  <button onClick={() => handleEdit(item.id)} className="text-primary-600 hover:underline">
-                    Edit
-                  </button>
-                  <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:underline">
-                    Delete
-                  </button>
-                </div>
-              </li>
+              <PantryItemCard
+                key={item.id}
+                item={item}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
             ))}
-          </ul>
+          </div>
         </div>
       )}
 
