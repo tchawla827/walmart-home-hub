@@ -34,7 +34,10 @@ export const mockGiftGenius = async (
           items.push(prod);
           total += prod.price;
         }
-        const discountPercent = 10 + Math.floor(Math.random() * 11); // 10-20%
+
+        // Random discount percentage between 5% and 20%
+        const discountPercent = 5 + Math.floor(Math.random() * 16); // 5-20%
+
         const discountedTotal = parseFloat(
           (total * (1 - discountPercent / 100)).toFixed(2),
         );

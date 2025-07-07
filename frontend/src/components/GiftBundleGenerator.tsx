@@ -25,7 +25,17 @@ const GiftBundleGenerator: React.FC = () => {
           budget,
         },
       );
-      setBundles(res.data.bundles);
+
+      const bundlesWithDiscount = res.data.bundles.map((b) => {
+        const subtotal = b.items.reduce((sum, item) => sum + item.price, 0);
+        const discountPercent = 5 + Math.floor(Math.random() * 16); // 5-20%
+        const totalPrice = parseFloat(
+          (subtotal * (1 - discountPercent / 100)).toFixed(2),
+        );
+        return { ...b, totalPrice, discountPercent };
+      });
+      setBundles(bundlesWithDiscount);
+
     } catch (err) {
       console.error("Failed to fetch bundles", err);
     } finally {
