@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { useAuth } from '../context/AuthContext';
+import StreakTracker, {
+  PantryItem as StreakPantryItem,
+} from '../components/StreakTracker';
 
 interface Profile {
   id: string;
@@ -11,10 +14,51 @@ interface Profile {
   avatar_url?: string | null;
 }
 
+const mockPantryItems: StreakPantryItem[] = [
+  {
+    name: 'Milk',
+    quantity: 2,
+    dailyConsumptionRate: 1,
+    lastDepletedDate: '2025-07-05',
+  },
+  {
+    name: 'Eggs',
+    quantity: 12,
+    dailyConsumptionRate: 2,
+    lastDepletedDate: '2025-07-04',
+  },
+  {
+    name: 'Rice',
+    quantity: 1,
+    dailyConsumptionRate: 0.5,
+    lastDepletedDate: '2025-07-02',
+  },
+];
+
+const calculateStreak = (items: StreakPantryItem[]): number => {
+  let latest: Date | null = null;
+  for (const item of items) {
+    if (item.quantity <= 0 && !item.lastDepletedDate) {
+      latest = new Date();
+      break;
+    }
+    if (item.lastDepletedDate) {
+      const date = new Date(item.lastDepletedDate);
+      if (!latest || date > latest) {
+        latest = date;
+      }
+    }
+  }
+  if (!latest) return 0;
+  const diff = Date.now() - latest.getTime();
+  return Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)));
+};
+
 const ProfilePage: React.FC = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [pantryCount, setPantryCount] = useState<number>(0);
   const [streak, setStreak] = useState<number>(0);
+  const [pantryItems, setPantryItems] = useState<StreakPantryItem[]>([]);
   const [autoOrder, setAutoOrder] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const { session, user, loading: authLoading } = useAuth();
@@ -23,6 +67,17 @@ const ProfilePage: React.FC = () => {
     const loadProfile = async () => {
       if (authLoading) return;
       if (!session || !user) {
+        setProfile({
+          id: 'demo-user',
+          name: 'Tavish Chawla',
+          email: 'tchawla827@gmail.com',
+          created_at: '2025-07-01T00:00:00Z',
+          auto_order_enabled: true,
+        });
+        setPantryItems(mockPantryItems);
+        setPantryCount(mockPantryItems.length);
+        setStreak(calculateStreak(mockPantryItems));
+        setAutoOrder(true);
         setLoading(false);
         return;
       }
@@ -146,6 +201,23 @@ const ProfilePage: React.FC = () => {
           />
           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
         </label>
+      </div>
+
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-4">
+        <h3 className="font-medium text-gray-900 dark:text-white mb-2">
+          Pantry Items
+        </h3>
+        <ul className="space-y-1">
+          {pantryItems.map((item) => (
+            <li
+              key={item.name}
+              className="flex justify-between text-sm text-gray-700 dark:text-gray-300"
+            >
+              <span>{item.name}</span>
+              <span>{item.quantity}</span>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
