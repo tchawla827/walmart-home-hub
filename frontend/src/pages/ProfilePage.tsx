@@ -19,10 +19,11 @@ const ProfilePage: React.FC = () => {
   const [autoOrder, setAutoOrder] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
-  const { session, user } = useAuth();
+  const { session, user, loading: authLoading } = useAuth();
 
   useEffect(() => {
     const loadProfile = async () => {
+      if (authLoading) return;
       if (!session || !user) {
         navigate('/login');
         return;
@@ -61,7 +62,7 @@ const ProfilePage: React.FC = () => {
     };
 
     loadProfile();
-  }, [navigate, session, user]);
+  }, [navigate, session, user, authLoading]);
 
   const toggleAutoOrder = async () => {
     if (!profile) return;
