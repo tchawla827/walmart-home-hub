@@ -58,12 +58,14 @@ const Navbar: React.FC = () => {
                   Login
                 </Link>
               )}
-              <Link
-                to="/profile"
-                className="px-3 py-2 rounded-md text-sm font-medium hover:bg-primary-500 hover:text-accent-300 transition-all"
-              >
-                Profile
-              </Link>
+              {isAuthenticated && (
+                <Link
+                  to="/profile"
+                  className="px-3 py-2 rounded-md text-sm font-medium hover:bg-primary-500 hover:text-accent-300 transition-all"
+                >
+                  Profile
+                </Link>
+              )}
             </div>
           </div>
           <div className="-mr-2 flex md:hidden">
@@ -133,13 +135,15 @@ const Navbar: React.FC = () => {
               Login
             </Link>
           )}
-          <Link
-            to="/profile"
-            className="block px-3 py-2 rounded-md text-base font-medium hover:bg-primary-500 hover:text-accent-300 transition-all"
-            onClick={() => setIsOpen(false)}
-          >
-            Profile
-          </Link>
+          {isAuthenticated && (
+            <Link
+              to="/profile"
+              className="block px-3 py-2 rounded-md text-base font-medium hover:bg-primary-500 hover:text-accent-300 transition-all"
+              onClick={() => setIsOpen(false)}
+            >
+              Profile
+            </Link>
+          )}
         </div>
       )}
     </nav>
