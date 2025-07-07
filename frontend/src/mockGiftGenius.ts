@@ -1,9 +1,11 @@
-import { mockProducts, Product } from './mockProducts';
+import { mockProducts, Product } from "./mockProducts";
 
 export interface GiftBundle {
   title: string;
   items: Product[];
   totalPrice: number;
+  /** Percentage discount applied to the bundle */
+  discountPercent: number;
 }
 
 export interface GiftSuggestions {
@@ -11,8 +13,10 @@ export interface GiftSuggestions {
   items: Product[];
 }
 
-export const mockGiftGenius = async (prompt: string): Promise<GiftSuggestions> => {
-  console.log('mockGiftGenius called with prompt:', prompt);
+export const mockGiftGenius = async (
+  prompt: string,
+): Promise<GiftSuggestions> => {
+  console.log("mockGiftGenius called with prompt:", prompt);
   return new Promise((resolve) => {
     setTimeout(() => {
       const numBundles = 2 + Math.floor(Math.random() * 2); // 2-3 bundles
@@ -30,10 +34,15 @@ export const mockGiftGenius = async (prompt: string): Promise<GiftSuggestions> =
           items.push(prod);
           total += prod.price;
         }
+        const discountPercent = 10 + Math.floor(Math.random() * 11); // 10-20%
+        const discountedTotal = parseFloat(
+          (total * (1 - discountPercent / 100)).toFixed(2),
+        );
         bundles.push({
           title: `Bundle ${i + 1}`,
           items,
-          totalPrice: parseFloat(total.toFixed(2)),
+          totalPrice: discountedTotal,
+          discountPercent,
         });
       }
 

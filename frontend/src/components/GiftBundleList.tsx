@@ -1,5 +1,5 @@
-import React from 'react';
-import { GiftBundle } from '../types';
+import React from "react";
+import { GiftBundle } from "../types";
 
 interface Props {
   bundles: GiftBundle[];
@@ -37,6 +37,14 @@ const GiftBundleList: React.FC<Props> = ({ bundles }) => {
           </ul>
           <p className="font-bold text-primary-600 dark:text-primary-400">
             Total: ${bundle.totalPrice.toFixed(2)}
+          </p>
+          <p className="text-sm text-green-600 dark:text-green-400">
+            {`Save ${bundle.discountPercent}% (`}
+            {`$${(
+              bundle.items.reduce((sum, item) => sum + item.price, 0) -
+              bundle.totalPrice
+            ).toFixed(2)}`}
+            {")"}
           </p>
         </div>
       ))}
