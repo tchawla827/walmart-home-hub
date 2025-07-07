@@ -39,20 +39,54 @@ const mockItems: PantryItem[] = [
   },
 ];
 
+interface ReorderLog {
+  itemId: string;
+  itemName: string;
+  status: 'confirmed' | 'skipped' | 'delayed';
+  timestamp: number;
+}
+
 const PantryDashboard: React.FC = () => {
   const [items, setItems] = useState(mockItems);
+  const [reorderLogs, setReorderLogs] = useState<ReorderLog[]>([]);
+  const [handled, setHandled] = useState<Record<string, boolean>>({});
 
   const getDaysRemaining = (item: PantryItem) =>
     Math.floor(item.quantity / item.dailyConsumptionRate);
 
-  const handleReorder = (item: PantryItem) => {
-    console.log(`Reorder confirmed for ${item.name}`);
-    toast.success(`Reorder confirmed for ${item.name}`);
-    setItems((prev) =>
-      prev.map((it) =>
-        it.id === item.id ? { ...it, quantity: INITIAL_STOCK } : it
-      )
-    );
+  const handleAction = (
+    item: PantryItem,
+    status: 'confirmed' | 'skipped' | 'delayed'
+  ) => {
+    const messageMap = {
+      confirmed: `Reorder confirmed for ${item.name}`,
+      skipped: `Skipped reorder for ${item.name}`,
+      delayed: `Delayed reorder for ${item.name}`,
+    } as const;
+
+    if (status === 'confirmed') {
+      setItems((prev) =>
+        prev.map((it) =>
+          it.id === item.id ? { ...it, quantity: INITIAL_STOCK } : it
+        )
+      );
+    }
+
+    setReorderLogs((prev) => [
+      ...prev,
+      { itemId: item.id, itemName: item.name, status, timestamp: Date.now() },
+    ]);
+
+    setHandled((prev) => ({ ...prev, [item.id]: true }));
+
+    const toastFn =
+      status === 'confirmed'
+        ? toast.success
+        : status === 'skipped'
+        ? toast.info
+        : toast.warning;
+    toastFn(messageMap[status]);
+    console.log(messageMap[status]);
   };
 
   const getBadgeColor = (days: number) => {
@@ -88,12 +122,35 @@ const PantryDashboard: React.FC = () => {
                 </p>
               )}
             </div>
-            <button
-              onClick={() => handleReorder(item)}
-              className="mt-4 md:mt-0 bg-accent-400 hover:bg-accent-500 text-gray-900 font-medium rounded px-4 py-2 transition-all"
-            >
-              Reorder
-            </button>
+            {days <= item.reorderBufferDays && !handled[item.id] ? (
+              <div className="mt-4 md:mt-0 flex gap-2">
+                <button
+                  onClick={() => handleAction(item, 'confirmed')}
+                  className="bg-green-500 hover:bg-green-600 text-white font-medium rounded px-3 py-1 text-sm"
+                >
+                  Confirm
+                </button>
+                <button
+                  onClick={() => handleAction(item, 'skipped')}
+                  className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium rounded px-3 py-1 text-sm"
+                >
+                  Skip
+                </button>
+                <button
+                  onClick={() => handleAction(item, 'delayed')}
+                  className="bg-yellow-500 hover:bg-yellow-600 text-white font-medium rounded px-3 py-1 text-sm"
+                >
+                  Delay
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => handleAction(item, 'confirmed')}
+                className="mt-4 md:mt-0 bg-accent-400 hover:bg-accent-500 text-gray-900 font-medium rounded px-4 py-2 transition-all"
+              >
+                Reorder
+              </button>
+            )}
           </div>
         );
       })}
