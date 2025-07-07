@@ -8,16 +8,14 @@ export interface PantryItem {
   id: string;
   name: string;
   category: string;
-  quantity: number;
-  unit: 'grams' | 'liters' | 'count';
-  /** amount consumed per selected frequency */
+  /** amount consumed per `days` period */
   rate: number;
-  frequency: 'daily' | 'weekly' | 'monthly';
+  /** number of days represented by `rate` */
+  days: number;
+  /** percentage threshold to trigger reorder */
+  reorderBuffer: number;
 }
 
-const UNITS: PantryItem['unit'][] = ['grams', 'liters', 'count'];
-const CATEGORIES = ['Dairy', 'Grains', 'Produce', 'Meat', 'Other'];
-const FREQUENCIES: PantryItem['frequency'][] = ['daily', 'weekly', 'monthly'];
 
 const generateId = () =>
   Math.random().toString(36).substring(2) + Date.now().toString(36);
@@ -27,10 +25,9 @@ const PantrySetup: React.FC = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [name, setName] = useState('');
   const [category, setCategory] = useState('Dairy');
-  const [quantity, setQuantity] = useState<number>(0);
-  const [unit, setUnit] = useState<PantryItem['unit']>('count');
   const [rate, setRate] = useState<number>(0);
-  const [frequency, setFrequency] = useState<PantryItem['frequency']>('daily');
+  const [days, setDays] = useState<number>(1);
+  const [reorderBuffer, setReorderBuffer] = useState<number>(25);
   const [search, setSearch] = useState('');
   const [results, setResults] = useState<Product[]>([]);
   const [showResults, setShowResults] = useState(false);
@@ -40,15 +37,15 @@ const PantrySetup: React.FC = () => {
   const resetForm = () => {
     setName('');
     setCategory('Dairy');
-    setQuantity(0);
-    setUnit('count');
     setRate(0);
-    setFrequency('daily');
+    setDays(1);
+    setReorderBuffer(25);
     setEditingId(null);
     setSelectedProduct(null);
   };
 
-  const validateForm = () => name.trim() && category && quantity > 0 && rate > 0;
+  const validateForm = () =>
+    name.trim() && category && rate > 0 && days > 0 && reorderBuffer > 0;
 
   const handleAddItem = (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,14 +58,14 @@ const PantrySetup: React.FC = () => {
       setItems((prev) =>
         prev.map((it) =>
           it.id === editingId
-            ? { ...it, name, category, quantity, unit, rate, frequency }
+            ? { ...it, name, category, rate, days, reorderBuffer }
             : it
         )
       );
-      console.log('Form payload (edit)', { id: editingId, name, category, quantity, unit, rate, frequency });
+      console.log('Form payload (edit)', { id: editingId, name, category, rate, days, reorderBuffer });
       toast.success('Item updated');
     } else {
-      const newItem: PantryItem = { id: generateId(), name, category, quantity, unit, rate, frequency };
+      const newItem: PantryItem = { id: generateId(), name, category, rate, days, reorderBuffer };
       console.log('Form payload (add)', newItem);
       setItems((prev) => [...prev, newItem]);
       toast.success('Item added');
@@ -80,10 +77,9 @@ const PantrySetup: React.FC = () => {
     if (!item) return;
     setName(item.name);
     setCategory(item.category);
-    setQuantity(item.quantity);
-    setUnit(item.unit);
     setRate(item.rate);
-    setFrequency(item.frequency);
+    setDays(item.days);
+    setReorderBuffer(item.reorderBuffer);
     setSelectedProduct({
       id: 0,
       title: item.name,
@@ -143,10 +139,9 @@ const PantrySetup: React.FC = () => {
     setName(product.title || product.name || '');
     setCategory(product.category);
     setSelectedProduct(product);
-    setQuantity(1);
-
     setRate(1);
-    setFrequency('daily');
+    setDays(1);
+    setReorderBuffer(25);
 
     setShowResults(false);
     setResults([]);
@@ -200,28 +195,6 @@ const PantrySetup: React.FC = () => {
               </p>
               <p className="text-sm text-gray-500">{selectedProduct.category}</p>
             </div>
-            <div className="flex flex-col items-center">
-              <span className="text-xs text-gray-500">Qty</span>
-              <div className="flex items-center">
-                <button
-                  type="button"
-                  onClick={() => setQuantity((q) => Math.max(q - 1, 0))}
-                  className="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-l"
-                >
-                  -
-                </button>
-                <span className="px-2 w-8 text-center bg-white dark:bg-gray-800 border-t border-b border-gray-300 dark:border-gray-600">
-                  {quantity}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setQuantity((q) => q + 1)}
-                  className="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-r"
-                >
-                  +
-                </button>
-              </div>
-            </div>
             <div className="flex flex-col items-center ml-2">
 
               <span className="text-xs text-gray-500">Rate</span>
@@ -248,30 +221,27 @@ const PantrySetup: React.FC = () => {
                 </button>
               </div>
             </div>
-            <select
-
-              value={frequency}
-              onChange={(e) => setFrequency(e.target.value as PantryItem['frequency'])}
-              className="border border-gray-300 dark:border-gray-600 rounded p-1 ml-2"
-            >
-              {FREQUENCIES.map((f) => (
-                <option key={f} value={f}>
-                  {f}
-                </option>
-              ))}
-            </select>
-            <select
-              value={unit}
-              onChange={(e) => setUnit(e.target.value as PantryItem['unit'])}
-              className="border border-gray-300 dark:border-gray-600 rounded p-1 ml-2"
-
-            >
-              {UNITS.map((u) => (
-                <option key={u} value={u}>
-                  {u}
-                </option>
-              ))}
-            </select>
+            <div className="flex flex-col items-center ml-2">
+              <span className="text-xs text-gray-500">Days</span>
+              <input
+                type="number"
+                min={1}
+                className="w-16 border border-gray-300 dark:border-gray-600 rounded p-1 bg-white dark:bg-gray-800"
+                value={days}
+                onChange={(e) => setDays(parseInt(e.target.value))}
+              />
+            </div>
+            <div className="flex flex-col items-center ml-2">
+              <span className="text-xs text-gray-500">Reorder %</span>
+              <input
+                type="number"
+                min={1}
+                max={100}
+                className="w-20 border border-gray-300 dark:border-gray-600 rounded p-1 bg-white dark:bg-gray-800"
+                value={reorderBuffer}
+                onChange={(e) => setReorderBuffer(parseInt(e.target.value))}
+              />
+            </div>
 
             <button
               type="submit"
@@ -293,7 +263,7 @@ const PantrySetup: React.FC = () => {
                 <div>
                   <p className="font-medium text-gray-900 dark:text-white">{item.name}</p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {item.quantity} {item.unit} - {item.rate}/{item.frequency} ({item.category})
+                    {item.rate} every {item.days}d - reorder at {item.reorderBuffer}% ({item.category})
                   </p>
                 </div>
                 <div className="space-x-2">
