@@ -144,8 +144,10 @@ const PantrySetup: React.FC = () => {
     setCategory(product.category);
     setSelectedProduct(product);
     setQuantity(1);
+
     setRate(1);
     setFrequency('daily');
+
     setShowResults(false);
     setResults([]);
     setSearch('');
@@ -221,21 +223,25 @@ const PantrySetup: React.FC = () => {
               </div>
             </div>
             <div className="flex flex-col items-center ml-2">
+
               <span className="text-xs text-gray-500">Rate</span>
               <div className="flex items-center">
                 <button
                   type="button"
                   onClick={() => setRate((r) => Math.max(r - 1, 0))}
+
                   className="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-l"
                 >
                   -
                 </button>
                 <span className="px-2 w-8 text-center bg-white dark:bg-gray-800 border-t border-b border-gray-300 dark:border-gray-600">
+
                   {rate}
                 </span>
                 <button
                   type="button"
                   onClick={() => setRate((r) => r + 1)}
+
                   className="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-r"
                 >
                   +
@@ -243,6 +249,7 @@ const PantrySetup: React.FC = () => {
               </div>
             </div>
             <select
+
               value={frequency}
               onChange={(e) => setFrequency(e.target.value as PantryItem['frequency'])}
               className="border border-gray-300 dark:border-gray-600 rounded p-1 ml-2"
@@ -257,6 +264,7 @@ const PantrySetup: React.FC = () => {
               value={unit}
               onChange={(e) => setUnit(e.target.value as PantryItem['unit'])}
               className="border border-gray-300 dark:border-gray-600 rounded p-1 ml-2"
+
             >
               {UNITS.map((u) => (
                 <option key={u} value={u}>
@@ -264,6 +272,7 @@ const PantrySetup: React.FC = () => {
                 </option>
               ))}
             </select>
+
             <button
               type="submit"
               className="ml-4 bg-accent-400 hover:bg-accent-500 text-gray-900 font-medium rounded p-2 transition-all"
@@ -273,6 +282,7 @@ const PantrySetup: React.FC = () => {
           </div>
         ) : (
           <p className="md:col-span-5 text-gray-500">Select a product to add.</p>
+
         )}
       </form>
       {items.length > 0 && (
