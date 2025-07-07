@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { supabase } from '../supabaseClient';
-import { useAuth } from '../context/AuthContext';
-import StreakTracker, {
-  PantryItem as StreakPantryItem,
-} from '../components/StreakTracker';
+
+import { PantryItem as StreakPantryItem } from '../components/StreakTracker';
+
 
 interface Profile {
   id: string;
@@ -61,73 +59,27 @@ const ProfilePage: React.FC = () => {
   const [pantryItems, setPantryItems] = useState<StreakPantryItem[]>([]);
   const [autoOrder, setAutoOrder] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
-  const { session, user, loading: authLoading } = useAuth();
-
+  // All users see the same demo profile
   useEffect(() => {
-    const loadProfile = async () => {
-      if (authLoading) return;
-      if (!session || !user) {
-        setProfile({
-          id: 'demo-user',
-          name: 'Tavish Chawla',
-          email: 'tchawla827@gmail.com',
-          created_at: '2025-07-01T00:00:00Z',
-          auto_order_enabled: true,
-        });
-        setPantryItems(mockPantryItems);
-        setPantryCount(mockPantryItems.length);
-        setStreak(calculateStreak(mockPantryItems));
-        setAutoOrder(true);
-        setLoading(false);
-        return;
-      }
-      try {
-        // Fetch user profile info
-        const { data, error } = await supabase
-          .from('users')
-          .select('id, name, email, created_at, auto_order_enabled, avatar_url')
-          .eq('id', user.id)
-          .single();
-        if (error) throw error;
-        setProfile(data);
-        setAutoOrder(!!data?.auto_order_enabled);
+    setProfile({
+      id: 'demo-user',
+      name: 'Tavish Chawla',
+      email: 'tchawla827@gmail.com',
+      created_at: '2025-07-01T00:00:00Z',
+      auto_order_enabled: true,
+    });
+    setPantryItems(mockPantryItems);
+    setPantryCount(mockPantryItems.length);
+    setStreak(calculateStreak(mockPantryItems));
+    setAutoOrder(true);
+    setLoading(false);
+  }, []);
 
-        // Pantry size
-        const { count } = await supabase
-          .from('pantry_items')
-          .select('*', { count: 'exact', head: true })
-          .eq('user_id', user.id);
-        if (typeof count === 'number') setPantryCount(count);
 
-        // Replenishment streak
-        const { data: streakData } = await supabase
-          .from('streaks')
-          .select('count')
-          .eq('user_id', user.id)
-          .eq('streak_type', 'replenishment')
-          .single();
-        if (streakData?.count) setStreak(streakData.count);
-      } catch (err) {
-        console.error('Failed to load profile', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadProfile();
-  }, [session, user, authLoading]);
-
-  const toggleAutoOrder = async () => {
+  const toggleAutoOrder = () => {
     if (!profile) return;
     const newVal = !autoOrder;
     setAutoOrder(newVal);
-    const { error } = await supabase
-      .from('users')
-      .update({ auto_order_enabled: newVal })
-      .eq('id', profile.id);
-    if (error) {
-      console.error('Failed to update auto-order', error);
-    }
   };
 
   if (loading) {
