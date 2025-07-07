@@ -40,6 +40,14 @@ const Navbar: React.FC = () => {
               >
                 Cart
               </Link>
+              {isAuthenticated && (
+                <Link
+                  to="/dashboard"
+                  className="px-3 py-2 rounded-md text-sm font-medium hover:bg-primary-500 hover:text-accent-300 transition-all"
+                >
+                  Dashboard
+                </Link>
+              )}
               {isAuthenticated ? (
                 <button
                   onClick={async () => {
@@ -115,6 +123,15 @@ const Navbar: React.FC = () => {
           >
             Cart
           </Link>
+          {isAuthenticated && (
+            <Link
+              to="/dashboard"
+              className="block px-3 py-2 rounded-md text-base font-medium hover:bg-primary-500 hover:text-accent-300 transition-all"
+              onClick={() => setIsOpen(false)}
+            >
+              Dashboard
+            </Link>
+          )}
           {isAuthenticated ? (
             <button
               onClick={async () => {
