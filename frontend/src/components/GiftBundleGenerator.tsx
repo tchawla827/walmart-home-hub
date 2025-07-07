@@ -44,19 +44,24 @@ const GiftBundleGenerator: React.FC = () => {
   };
 
   const handleAddAll = (bundle: GiftBundle) => {
-    bundle.items.forEach((item) => {
-      const prod: ProductWithQty = {
-        id: item.id!,
-        title: item.name,
-        price: item.price,
-        description: item.description,
-        category: "bundle",
-        thumbnail: item.imageUrl,
-        images: [item.imageUrl],
-        quantity: 1,
-      };
-      addToCart(prod);
-    });
+    const subtotal = bundle.items.reduce((sum, i) => sum + i.price, 0);
+    const discountPercent =
+      bundle.discountPercent ?? Math.round((1 - bundle.totalPrice / subtotal) * 100);
+
+    const prod: ProductWithQty = {
+      id: Date.now(),
+      title: bundle.title,
+      description: `Bundle of ${bundle.items.length} items`,
+      price: bundle.totalPrice,
+      discountPercentage: discountPercent,
+      category: "bundle",
+      thumbnail: bundle.items[0]?.imageUrl || "",
+      images: bundle.items.map((i) => i.imageUrl),
+      quantity: 1,
+      bundleItems: bundle.items,
+      isBundle: true,
+    } as any;
+    addToCart(prod);
     toast.success(`Added "${bundle.title}" bundle to cart!`);
   };
 
