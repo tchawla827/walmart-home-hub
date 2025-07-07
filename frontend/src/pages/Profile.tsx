@@ -25,7 +25,7 @@ const Profile: React.FC = () => {
       autoReorder,
       reorderBuffer,
     };
-    console.log('SmartPantry Settings', settings);
+    console.log(settings);
     toast.success('SmartPantry preferences saved!');
   };
 
@@ -86,27 +86,30 @@ const Profile: React.FC = () => {
 
           <div>
             <label htmlFor="buffer" className="block mb-2 font-medium text-gray-900 dark:text-white">
-              Reorder Buffer
+              Reorder Buffer Days
               <span className="text-sm text-gray-500 dark:text-gray-400 block">
-                Reorder when this percent remains
+                Days before running out to reorder
               </span>
             </label>
             <input
               id="buffer"
               type="number"
               min={1}
-              max={100}
               className="bg-gray-50 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white dark:bg-gray-700 rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-24 p-2.5"
               value={reorderBuffer}
               onChange={(e) => setReorderBuffer(parseInt(e.target.value))}
             />
           </div>
 
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Current: {autoReorder ? 'Auto-Reorder On' : 'Auto-Reorder Off'}, reorder {reorderBuffer} day{reorderBuffer === 1 ? '' : 's'} before
+          </p>
+
           <button
             onClick={handleSavePantry}
             className="bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-lg font-medium transition-all hover:scale-[1.02]"
           >
-            Save SmartPantry Settings
+            Save Preferences
           </button>
         </div>
       </div>
