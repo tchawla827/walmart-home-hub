@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { useAuth } from '../context/AuthContext';
 
@@ -18,14 +17,13 @@ const ProfilePage: React.FC = () => {
   const [streak, setStreak] = useState<number>(0);
   const [autoOrder, setAutoOrder] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
-  const navigate = useNavigate();
   const { session, user, loading: authLoading } = useAuth();
 
   useEffect(() => {
     const loadProfile = async () => {
       if (authLoading) return;
       if (!session || !user) {
-        navigate('/login');
+        setLoading(false);
         return;
       }
       try {
@@ -62,7 +60,7 @@ const ProfilePage: React.FC = () => {
     };
 
     loadProfile();
-  }, [navigate, session, user, authLoading]);
+  }, [session, user, authLoading]);
 
   const toggleAutoOrder = async () => {
     if (!profile) return;
@@ -88,34 +86,39 @@ const ProfilePage: React.FC = () => {
     );
   }
 
-  if (!profile) {
-    return <div className="text-center mt-10">Unauthenticated</div>;
-  }
+  const displayProfile =
+    profile || ({ name: 'Guest', email: '' } as Profile);
 
-  const initials = profile.name
-    ? profile.name
+  const initials = displayProfile.name
+    ? displayProfile.name
         .split(' ')
         .map((n) => n[0])
         .join('')
         .toUpperCase()
-    : profile.email?.charAt(0).toUpperCase();
+    : displayProfile.email?.charAt(0).toUpperCase();
 
   return (
     <div className="max-w-xl mx-auto p-4 space-y-6">
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex items-center space-x-6">
-        {profile.avatar_url ? (
-          <img src={profile.avatar_url} alt="avatar" className="w-20 h-20 rounded-full object-cover" />
+        {displayProfile.avatar_url ? (
+          <img
+            src={displayProfile.avatar_url}
+            alt="avatar"
+            className="w-20 h-20 rounded-full object-cover"
+          />
         ) : (
           <div className="w-20 h-20 rounded-full bg-primary-600 text-white flex items-center justify-center text-2xl font-bold">
             {initials}
           </div>
         )}
         <div>
-          <p className="text-2xl font-semibold text-gray-900 dark:text-white">{profile.name || profile.email}</p>
-          <p className="text-gray-600 dark:text-gray-300">{profile.email}</p>
-          {profile.created_at && (
+          <p className="text-2xl font-semibold text-gray-900 dark:text-white">
+            {displayProfile.name || displayProfile.email}
+          </p>
+          <p className="text-gray-600 dark:text-gray-300">{displayProfile.email}</p>
+          {displayProfile.created_at && (
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Joined {new Date(profile.created_at).toLocaleDateString()}
+              Joined {new Date(displayProfile.created_at).toLocaleDateString()}
             </p>
           )}
         </div>
