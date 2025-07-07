@@ -13,6 +13,7 @@ import GiftBundlePage from './pages/GiftBundlePage';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import SmartPantryDashboard from './pages/SmartPantryDashboard';
 import { CartProvider } from './context/CartContext';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Import toast styling
@@ -50,6 +51,7 @@ const App: React.FC = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/pantry/dashboard" element={<SmartPantryDashboard />} />
         </Routes>
       </Router>
     </CartProvider>
