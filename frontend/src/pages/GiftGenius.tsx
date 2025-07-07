@@ -66,7 +66,6 @@ const GiftGenius: React.FC = () => {
       isBundle: true,
     } as any;
     addToCart(prod);
-    toast.success(`Added "${bundle.title}" bundle to cart!`);
   };
 
   return (

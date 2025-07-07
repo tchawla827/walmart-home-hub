@@ -68,7 +68,6 @@ const GiftBundlePage: React.FC = () => {
       isBundle: true,
     } as any;
     addToCart(prod);
-    toast.success(`Added "${currentBundle.title}" bundle to cart!`);
   };
 
   // 👇 Return early only after hooks are declared
