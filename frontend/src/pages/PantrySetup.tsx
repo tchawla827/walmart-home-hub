@@ -21,8 +21,8 @@ export interface PantryItem {
   name: string;
   category: string;
   /** amount consumed per `days` period */
-  rate: number;
-  /** number of days represented by `rate` */
+  dailyUsage: number;
+  /** number of days represented by `dailyUsage` */
   days: number;
   /** percentage threshold to trigger reorder */
   reorderBuffer: number;
@@ -38,7 +38,7 @@ const PantrySetup: React.FC = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [name, setName] = useState('');
   const [category, setCategory] = useState('Dairy');
-  const [rate, setRate] = useState<number>(0);
+  const [dailyUsage, setDailyUsage] = useState<number>(0);
   const [days, setDays] = useState<number>(1);
   const [reorderBuffer, setReorderBuffer] = useState<number>(25);
   const [unit, setUnit] = useState<string>('pcs');
@@ -51,7 +51,7 @@ const PantrySetup: React.FC = () => {
   const resetForm = () => {
     setName('');
     setCategory('Dairy');
-    setRate(0);
+    setDailyUsage(0);
     setDays(1);
     setReorderBuffer(25);
     setUnit('pcs');
@@ -63,7 +63,7 @@ const PantrySetup: React.FC = () => {
     name.trim() &&
     category &&
     unit &&
-    rate > 0 &&
+    dailyUsage > 0 &&
     days > 0 &&
     reorderBuffer > 0;
 
@@ -78,7 +78,7 @@ const PantrySetup: React.FC = () => {
       setItems((prev) =>
         prev.map((it) =>
           it.id === editingId
-            ? { ...it, name, category, rate, days, reorderBuffer, unit }
+            ? { ...it, name, category, dailyUsage, days, reorderBuffer, unit }
             : it
         )
       );
@@ -86,7 +86,7 @@ const PantrySetup: React.FC = () => {
         id: editingId,
         name,
         category,
-        rate,
+        dailyUsage,
         days,
         reorderBuffer,
         unit,
@@ -97,7 +97,7 @@ const PantrySetup: React.FC = () => {
         id: generateId(),
         name,
         category,
-        rate,
+        dailyUsage,
         days,
         reorderBuffer,
         unit,
@@ -113,7 +113,7 @@ const PantrySetup: React.FC = () => {
     if (!item) return;
     setName(item.name);
     setCategory(item.category);
-    setRate(item.rate);
+    setDailyUsage(item.dailyUsage);
     setDays(item.days);
     setReorderBuffer(item.reorderBuffer);
     setUnit(item.unit);
@@ -177,7 +177,7 @@ const PantrySetup: React.FC = () => {
     setCategory(product.category);
     setUnit(getUnitForProduct(product));
     setSelectedProduct(product);
-    setRate(1);
+    setDailyUsage(1);
     setDays(1);
     setReorderBuffer(25);
 
@@ -234,29 +234,16 @@ const PantrySetup: React.FC = () => {
               <p className="text-sm text-gray-500">{selectedProduct.category}</p>
             </div>
             <div className="flex flex-col items-center ml-2">
-
-              <span className="text-xs text-gray-500">Daily Use</span>
+              <span className="text-xs text-gray-500">Daily Usage</span>
               <div className="flex items-center">
-                <button
-                  type="button"
-                  onClick={() => setRate((r) => Math.max(r - 1, 0))}
-
-                  className="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-l"
-                >
-                  -
-                </button>
-                <span className="px-2 w-8 text-center bg-white dark:bg-gray-800 border-t border-b border-gray-300 dark:border-gray-600">
-
-                  {rate}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setRate((r) => r + 1)}
-
-                  className="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-r"
-                >
-                  +
-                </button>
+                <input
+                  type="number"
+                  step="any"
+                  min={0}
+                  className="w-20 border border-gray-300 dark:border-gray-600 rounded p-1 bg-white dark:bg-gray-800"
+                  value={dailyUsage}
+                  onChange={(e) => setDailyUsage(parseFloat(e.target.value))}
+                />
                 <select
                   value={unit}
                   onChange={(e) => setUnit(e.target.value)}

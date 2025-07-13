@@ -16,7 +16,7 @@ const mockItems: PantryItem[] = [
   {
     id: '1',
     name: 'Milk',
-    quantity: 2000,
+    quantity: 1000,
     unit: 'ml',
     dailyConsumptionRate: 250,
     reorderBufferDays: 2,
@@ -32,7 +32,7 @@ const mockItems: PantryItem[] = [
   {
     id: '3',
     name: 'Coffee Beans',
-    quantity: 400,
+    quantity: 500,
     unit: 'g',
     dailyConsumptionRate: 50,
     reorderBufferDays: 3,
@@ -121,7 +121,7 @@ const PantryDashboard: React.FC = () => {
                       {item.name}
                     </h3>
                     <span className="text-sm text-gray-500 dark:text-gray-400">
-                      {item.quantity} {item.unit}
+                      {item.quantity} {item.unit} remaining
                     </span>
                   </div>
                   
