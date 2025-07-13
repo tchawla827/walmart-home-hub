@@ -13,7 +13,7 @@ const PantryItemCard: React.FC<Props> = ({ item, onEdit, onDelete }) => {
       <div>
         <p className="font-medium text-gray-900 dark:text-white">{item.name}</p>
         <p className="text-sm text-gray-500 dark:text-gray-400">
-          {item.category} – Daily Use: {item.rate} {item.unit} – Duration: {item.days} {item.days === 1 ? 'day' : 'days'} – Reorder Buffer: {item.reorderBuffer}%
+          {item.category} – Daily Usage: {item.dailyUsage} {item.unit} – Duration: {item.days} {item.days === 1 ? 'day' : 'days'} – Reorder Buffer: {item.reorderBuffer}%
         </p>
       </div>
       <div className="space-x-2">
