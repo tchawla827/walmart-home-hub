@@ -4,6 +4,7 @@ export interface ReorderLog {
   id: string;
   itemName: string;
   quantity: number;
+  unit?: string;
   status: 'suggested' | 'confirmed' | 'skipped' | 'delayed';
   date: string; // ISO string
 }
@@ -13,6 +14,7 @@ const mockReorderLogs: ReorderLog[] = [
     id: '1',
     itemName: 'Milk',
     quantity: 1000,
+    unit: 'ml',
     status: 'suggested',
     date: '2025-07-06T10:15:00Z',
   },
@@ -20,6 +22,7 @@ const mockReorderLogs: ReorderLog[] = [
     id: '2',
     itemName: 'Rice',
     quantity: 2000,
+    unit: 'g',
     status: 'confirmed',
     date: '2025-07-05T18:45:00Z',
   },
@@ -27,6 +30,7 @@ const mockReorderLogs: ReorderLog[] = [
     id: '3',
     itemName: 'Eggs',
     quantity: 12,
+    unit: 'pcs',
     status: 'skipped',
     date: '2025-07-04T08:30:00Z',
   },
@@ -34,6 +38,7 @@ const mockReorderLogs: ReorderLog[] = [
     id: '4',
     itemName: 'Coffee Beans',
     quantity: 500,
+    unit: 'g',
     status: 'delayed',
     date: '2025-07-03T14:20:00Z',
   },
@@ -141,7 +146,7 @@ const ReorderTimeline: React.FC = () => {
                         {new Date(log.date).toLocaleString(undefined, {
                           dateStyle: 'medium',
                           timeStyle: 'short',
-                        })} • Qty: {log.quantity}
+                        })} • Qty: {log.quantity} {log.unit || ''}
                       </p>
                     </div>
                     <span
