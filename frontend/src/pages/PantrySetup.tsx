@@ -5,6 +5,17 @@ import { Product } from '../types';
 import { mockProducts } from '../mockProducts';
 import PantryItemCard from '../components/PantryItemCard';
 
+const unitOptions = ['ml', 'g', 'pcs', 'pack'];
+
+const getUnitForProduct = (product: Product | null): string => {
+  if (!product) return 'pcs';
+  const name = (product.title || product.name || '').toLowerCase();
+  if (name.includes('milk') || name.includes('water')) return 'ml';
+  if (name.includes('coffee') || name.includes('rice')) return 'g';
+  if (name.includes('egg')) return 'pcs';
+  return 'pcs';
+};
+
 export interface PantryItem {
   id: string;
   name: string;
@@ -15,6 +26,7 @@ export interface PantryItem {
   days: number;
   /** percentage threshold to trigger reorder */
   reorderBuffer: number;
+  unit: string;
 }
 
 
@@ -29,6 +41,7 @@ const PantrySetup: React.FC = () => {
   const [rate, setRate] = useState<number>(0);
   const [days, setDays] = useState<number>(1);
   const [reorderBuffer, setReorderBuffer] = useState<number>(25);
+  const [unit, setUnit] = useState<string>('pcs');
   const [search, setSearch] = useState('');
   const [results, setResults] = useState<Product[]>([]);
   const [showResults, setShowResults] = useState(false);
@@ -41,12 +54,18 @@ const PantrySetup: React.FC = () => {
     setRate(0);
     setDays(1);
     setReorderBuffer(25);
+    setUnit('pcs');
     setEditingId(null);
     setSelectedProduct(null);
   };
 
   const validateForm = () =>
-    name.trim() && category && rate > 0 && days > 0 && reorderBuffer > 0;
+    name.trim() &&
+    category &&
+    unit &&
+    rate > 0 &&
+    days > 0 &&
+    reorderBuffer > 0;
 
   const handleAddItem = (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,14 +78,30 @@ const PantrySetup: React.FC = () => {
       setItems((prev) =>
         prev.map((it) =>
           it.id === editingId
-            ? { ...it, name, category, rate, days, reorderBuffer }
+            ? { ...it, name, category, rate, days, reorderBuffer, unit }
             : it
         )
       );
-      console.log('Form payload (edit)', { id: editingId, name, category, rate, days, reorderBuffer });
+      console.log('Form payload (edit)', {
+        id: editingId,
+        name,
+        category,
+        rate,
+        days,
+        reorderBuffer,
+        unit,
+      });
       toast.success('Item updated');
     } else {
-      const newItem: PantryItem = { id: generateId(), name, category, rate, days, reorderBuffer };
+      const newItem: PantryItem = {
+        id: generateId(),
+        name,
+        category,
+        rate,
+        days,
+        reorderBuffer,
+        unit,
+      };
       console.log('Form payload (add)', newItem);
       setItems((prev) => [...prev, newItem]);
       toast.success('Item added');
@@ -81,6 +116,7 @@ const PantrySetup: React.FC = () => {
     setRate(item.rate);
     setDays(item.days);
     setReorderBuffer(item.reorderBuffer);
+    setUnit(item.unit);
     setSelectedProduct({
       id: 0,
       title: item.name,
@@ -139,6 +175,7 @@ const PantrySetup: React.FC = () => {
   const handleSelectProduct = (product: Product) => {
     setName(product.title || product.name || '');
     setCategory(product.category);
+    setUnit(getUnitForProduct(product));
     setSelectedProduct(product);
     setRate(1);
     setDays(1);
@@ -198,7 +235,7 @@ const PantrySetup: React.FC = () => {
             </div>
             <div className="flex flex-col items-center ml-2">
 
-              <span className="text-xs text-gray-500">Rate</span>
+              <span className="text-xs text-gray-500">Daily Use</span>
               <div className="flex items-center">
                 <button
                   type="button"
@@ -220,10 +257,21 @@ const PantrySetup: React.FC = () => {
                 >
                   +
                 </button>
+                <select
+                  value={unit}
+                  onChange={(e) => setUnit(e.target.value)}
+                  className="ml-1 border border-gray-300 dark:border-gray-600 rounded p-1 bg-white dark:bg-gray-800 text-xs"
+                >
+                  {unitOptions.map((u) => (
+                    <option key={u} value={u}>
+                      {u}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
             <div className="flex flex-col items-center ml-2">
-              <span className="text-xs text-gray-500">Days</span>
+              <span className="text-xs text-gray-500">Duration (days)</span>
               <input
                 type="number"
                 min={1}
@@ -233,7 +281,7 @@ const PantrySetup: React.FC = () => {
               />
             </div>
             <div className="flex flex-col items-center ml-2">
-              <span className="text-xs text-gray-500">Reorder %</span>
+              <span className="text-xs text-gray-500">Reorder Buffer (%)</span>
               <input
                 type="number"
                 min={1}
